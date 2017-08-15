@@ -1,0 +1,76 @@
+2017/8/15 9:55:41 摄像机登录失败
+7
+2017/8/15 9:55:44 摄像机登录失败
+7
+2017-08-15 09:55:44 摄像机已检测断开，正在重连
+2017/8/15 9:55:50 摄像机登录失败
+7
+2017-08-15 09:55:50 摄像机已检测断开，正在重连
+2017/8/15 9:56:06 摄像机登录失败
+7
+2017/8/15 9:56:09 摄像机登录失败
+7
+2017-08-15 09:56:09 摄像机已检测断开，正在重连
+2017/8/15 9:56:15 摄像机登录失败
+7
+2017-08-15 09:56:15 摄像机已检测断开，正在重连
+2017/8/15 9:56:21 摄像机登录失败
+7
+2017-08-15 09:56:21 摄像机已检测断开，正在重连
+2017-08-15 09:56:21 激光控制器已检测断开，正在重连
+2017/8/15 9:56:21 天线接收回调异常
+System.ObjectDisposedException: 无法访问已释放的对象。
+对象名:“System.Net.Sockets.Socket”。
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult, SocketError& errorCode)
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   在 ETCF.FormDemo.RSUReceiveCallBack(IAsyncResult ar) 位置 E:\Program\ETCG武汉\修正\Demo\FormDemo.cs:行号 826
+2017/8/15 9:56:27 摄像机登录失败
+7
+2017-08-15 09:56:27 摄像机已检测断开，正在重连
+2017-08-15 09:56:27 天线控制器已检测断开，正在重连
+2017/8/15 9:56:33 摄像机登录失败
+7
+2017-08-15 09:56:33 摄像机已检测断开，正在重连
+2017/8/15 9:56:36 激光接收回调异常
+System.ObjectDisposedException: 无法访问已释放的对象。
+对象名:“System.Net.Sockets.Socket”。
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult, SocketError& errorCode)
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   在 ETCF.FormDemo.JGReceiveCallBack(IAsyncResult ar) 位置 E:\Program\ETCG武汉\修正\Demo\FormDemo.cs:行号 936
+2017/8/15 9:56:36 天线接收回调异常
+System.ObjectDisposedException: 无法访问已释放的对象。
+对象名:“System.Net.Sockets.Socket”。
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult, SocketError& errorCode)
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   在 ETCF.FormDemo.RSUReceiveCallBack(IAsyncResult ar) 位置 E:\Program\ETCG武汉\修正\Demo\FormDemo.cs:行号 826
+2017/8/15 9:56:39 摄像机登录失败
+7
+2017-08-15 09:56:39 摄像机已检测断开，正在重连
+2017-08-15 09:56:39 天线控制器已检测断开，正在重连
+2017-08-15 09:56:39 激光控制器已检测断开，正在重连
+2017/8/15 9:56:45 摄像机登录失败
+7
+2017-08-15 09:56:45 摄像机已检测断开，正在重连
+2017/8/15 9:56:51 激光接收回调异常
+System.ObjectDisposedException: 无法访问已释放的对象。
+对象名:“System.Net.Sockets.Socket”。
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult, SocketError& errorCode)
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   在 ETCF.FormDemo.JGReceiveCallBack(IAsyncResult ar) 位置 E:\Program\ETCG武汉\修正\Demo\FormDemo.cs:行号 936
+2017/8/15 9:56:51 天线接收回调异常
+System.ObjectDisposedException: 无法访问已释放的对象。
+对象名:“System.Net.Sockets.Socket”。
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult, SocketError& errorCode)
+   在 System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   在 ETCF.FormDemo.RSUReceiveCallBack(IAsyncResult ar) 位置 E:\Program\ETCG武汉\修正\Demo\FormDemo.cs:行号 826
+2017/8/15 9:56:51 摄像机登录失败
+7
+2017-08-15 09:56:51 摄像机已检测断开，正在重连
+2017-08-15 09:56:51 天线控制器已检测断开，正在重连
+2017-08-15 09:56:51 激光控制器已检测断开，正在重连
+2017/8/15 9:56:57 摄像机登录失败
+7
+2017-08-15 09:56:57 摄像机已检测断开，正在重连
+2017/8/15 9:57:03 摄像机登录失败
+7
+2017-08-15 09:57:03 摄像机已检测断开，正在重连
