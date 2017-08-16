@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ETCF
+namespace ETCF.DataCoding
 {
-    class RSUDataHander
+    class HanderJGData
     {
     }
 }

@@ -9,5 +9,9 @@ namespace ETCF
     {
         public static bool WriteLogSwitch = false;
         public static int OperLogFreshTime = 500;//单位ms
+
+        public static HKCamera HKCameraInter = null;
+
+        public static SQLServerInter SQLInter = null;
     }
 }

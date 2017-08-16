@@ -13,7 +13,6 @@ using System.Runtime.InteropServices;
 using System.Net;
 using System.Data.SqlClient;
 using System.Net.Sockets;
-using ETCF.Interface;
 using System.Drawing.Text;
 using LayeredSkin.DirectUI;
 
@@ -111,11 +110,9 @@ namespace ETCF
         string fontpath = string.Format(@"{0}\{1}", Application.StartupPath, "Digital2.ttf");
         #region******通用类******
         DataHander datah = new DataHander();
-        Thread rsuProThread;//rsu维护线程
-        long g_lUnixTime = 0x00000000;
-        Thread jgProThread;//jg维护线程
+        
         int index = 0;//列表计数
-        int Count = 0;//接受ETC计数
+        
         string RedicoPath = string.Format("{0}\\{1}", Application.StartupPath, "red.ico");
         string GreenicoPath = string.Format("{0}\\{1}", Application.StartupPath, "green.ico");
         System.Collections.Concurrent.ConcurrentQueue<StateObject> queue = new System.Collections.Concurrent.ConcurrentQueue<StateObject>();//用于缓存
@@ -140,20 +137,15 @@ namespace ETCF
         private string sql_password;//密码
         private string sql_port;//端口
         private static string connStr = @"";
-        public SqlConnection SQLconnection = null;
-        Thread DataBaseConThread;
+        //public SqlConnection SQLconnection = null;
+        //Thread DataBaseConThread;
         #endregion
 
         #region ******RSU，JG，摄像机 相关参数******
         //连接天线相关
         private string RSUip;
         private string RSUport;
-        private IPAddress rsu_ip;
-        private IPEndPoint rsu_server;
-        private Socket rsu_sock;
         public bool IsConnRSU = false;
-        private static ManualResetEvent rsu_connectDone =
-    new ManualResetEvent(false);
         private static ManualResetEvent rsu_inQueueDone =
             new ManualResetEvent(false);
         public byte RSCTL = 0x80;
@@ -161,34 +153,28 @@ namespace ETCF
         //连接激光相关
         private string JGip;
         private string JGport;
-        private IPAddress jg_ip;
-        private IPEndPoint jg_server;
-        private Socket jg_sock;
         public bool IsConnJG = false;
-        private static ManualResetEvent jg_connectDone =
-new ManualResetEvent(false);
         private static ManualResetEvent jg_inQueueDone =
             new ManualResetEvent(false);
         System.Collections.Concurrent.ConcurrentQueue<QueueJGData> qJGData = new System.Collections.Concurrent.ConcurrentQueue<QueueJGData>();//用于缓存
         //连接摄像机
-        HKCameraOutput HKOutput = new HKCameraOutput();
-        public CameraClass HKcamera;
         private string HKCameraip;
         private string HKCameraUsername;
         private string HKCameraPassword;
         //摄像机相关参数
-        public string GetVehicleLogoRecog = "";
-        private Int32 m_lUserID = -1;
-        private CHCNetSDK.MSGCallBack m_falarmData = null;
-        private int iDeviceNumber = 0; //添加设备个数
-        private uint iLastErr = 0;
-        private string strErr;
-        private Int32 m_lAlarmHandle;
-        private Int32 iListenHandle = -1;
-        Thread HKCameraThread;
-        public string GetPlateNo = "未检测";
-        public string imagepath = "未知";
-        public volatile bool HKConnState = false;
+        
+        //private Int32 m_lUserID = -1;
+        //private CHCNetSDK.MSGCallBack m_falarmData = null;
+        //private int iDeviceNumber = 0; //添加设备个数
+        //private uint iLastErr = 0;
+        //private string strErr;
+        //private Int32 m_lAlarmHandle;
+        //private Int32 iListenHandle = -1;
+        //public string GetPlateNo = "未检测";
+        //public string imagepath = "未知";
+        //public string GetVehicleLogoRecog = "";
+        //public volatile bool HKConnState = false;
+        //HKCamera HKCameraInterface = new HKCamera(this);
         public ManualResetEvent CameraPicture = new ManualResetEvent(false);
         #endregion
 
@@ -306,6 +292,7 @@ new ManualResetEvent(false);
             try
             {
                 //连接天线控制器
+                RSUTcpClient = new SocketHelper.TcpClients();
                 RSUConnect(RSUip, RSUport);
             }
             catch (Exception ex)
@@ -315,6 +302,7 @@ new ManualResetEvent(false);
             try
             {
                 //连接激光控制器
+                JGTcpClient = new SocketHelper.TcpClients();
                 JGConnect(JGip, JGport);
             }
             catch (Exception ex)
@@ -325,7 +313,9 @@ new ManualResetEvent(false);
             try
             {
                 //摄像机连接
-                initHK();
+                GlobalMember.HKCameraInter = new HKCamera(this);
+                GlobalMember.HKCameraInter.initHK(HKCameraip,HKCameraUsername,HKCameraPassword);
+               
             }
             catch (Exception ex)
             {
@@ -335,14 +325,18 @@ new ManualResetEvent(false);
             {
                 //数据库连接
                 connStr = @"Server=" + sql_ip + ";uid=" + sql_username + ";pwd=" + sql_password + ";database=" + sql_dbname;
-                SQLInit();
+                GlobalMember.SQLInter = new SQLServerInter(this, sql_dbname, sql_ip,sql_username, sql_password,connStr);
+                GlobalMember.SQLInter.SQLInit();
+                //SQLInit();
             }
             catch (Exception ex)
             {
                 Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 数据库初始化异常\r\n" + ex.ToString() + "\r\n");
             }
+            //维护线程
             ProtectPro();
-
+            //数据接收线程
+            SocketHelper.pushSockets = new SocketHelper.PushSockets(Rec);
             //数据解析线程
             ResThread();
             //数据入库
@@ -350,6 +344,7 @@ new ManualResetEvent(false);
             //定时心跳
             timer1.Start();
         }
+
         #region******线程维护部分******
         //维护线程
         private void ProtectPro()
@@ -364,10 +359,11 @@ new ManualResetEvent(false);
             while (true)
             {
                 //摄像头重连
-                if (HKConnState == false)
+                if (HKCamera.HKConnState == false)
                 {
                     pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
-                    initHK();
+                    GlobalMember.HKCameraInter = new HKCamera(this);
+                    GlobalMember.HKCameraInter.initHK(HKCameraip, HKCameraUsername, HKCameraPassword);
                     Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
                 }
                 else
@@ -757,877 +753,51 @@ new ManualResetEvent(false);
         #endregion
 
         #region    ******RSU建立连接******
-        //RSU通信部分
+        SocketHelper.TcpClients RSUTcpClient;
         public void RSUConnect(string s_Rsuip, string s_Rsuport)
         {
-            try
-            {
-                rsu_ip = IPAddress.Parse(s_Rsuip);
-                rsu_server = new IPEndPoint(rsu_ip, Int32.Parse(s_Rsuport));
-                rsu_sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                rsu_sock.BeginConnect(rsu_server, new AsyncCallback(RSUConnectCallback), rsu_sock);
-                AddOperLogCacheStr("天线正在建立连接");
-                
-
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLog(DateTime.Now + " 天线建立连接异常\r\n" + ex.ToString() + "\r\n");
-
-                //MessageBox.Show(ex.ToString());
-            }
+            RSUTcpClient.InitSocket(s_Rsuip, Convert.ToInt32(s_Rsuport));
+            RSUTcpClient.Start();
+            IsConnRSU = true;
         }
-        //RSU连接
-        public void RSUConnectCallback(IAsyncResult ar)
-        {
-            try
-            {
-                Socket rsu_client = (Socket)ar.AsyncState;
-                rsu_client.EndConnect(ar);
-                try
-                {
-                    RSUGetData();
-                    IsConnRSU = true;
-                }
-                catch
-                {
-                    IsConnRSU = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLog(DateTime.Now + " 天线连接回调异常\r\n" + ex.ToString() + "\r\n");
-                //MessageBox.Show(ex.ToString());
-            }
+        
+        #endregion
 
-        }
-        //RSU接收
-        public void RSUGetData()
+        #region******专用接收线程******
+        //通用接收，接入缓存
+        private void Rec(SocketHelper.Sockets sks)
         {
-            try
+            this.Invoke(new ThreadStart(delegate
             {
-                StateObject rsu_state = new StateObject();
-                rsu_state.workSocket = rsu_sock;
-                rsu_sock.BeginReceive(rsu_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(RSUReceiveCallBack), rsu_state);
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLog(DateTime.Now + " 天线接收数据异常\r\n" + ex.ToString() + "\r\n");
-                //MessageBox.Show(ex.ToString());
-            }
-        }
-        //RSU接收回调函数
-        public void RSUReceiveCallBack(IAsyncResult ar)
-        {
-            try
-            {
-                StateObject rsu_state = (StateObject)ar.AsyncState;
-                Socket rsu_client = rsu_state.workSocket;
-                rsu_state.revLength = rsu_client.EndReceive(ar);
-                if (rsu_state.revLength == 0)
+                if (sks.ex != null)
                 {
-                    AddOperLogCacheStr("天线断线了");
+                    //MessageBox.Show(sks.ex.Message);
+                    Log.WriteLog(DateTime.Now.ToString() +" "+sks.Ip+ "异常\r\n" + sks.ex.ToString() + "\r\n");
                     
-                    //链接断开了
-                    //rsu_client.Close();
-                    //rsu_sock.Close();
-                    IsConnRSU = false;
-                    //连接激光控制器
-                    //这里进行维护，暂未修改
-                    //RSUConnect(RSUip, RSUport);
-
                 }
-                else if (rsu_state.revLength > 0)
+                else
                 {
-                    HeartRSUCount = 0;
-                    if(rsu_state.buffer[3]==0x9D)
-                    {
-                        TcpReply(0xD9, rsu_sock);
-                    }
-                    string ss = "";
-                    for (int i = 0; i < rsu_state.revLength; i++)
-                    {
-                        ss += rsu_state.buffer[i].ToString("X2");
-                        ss += " ";
-                    }
-                    Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  收到天线数据:" + ss + "\r\n");
-                    HanderOrgData(rsu_state.buffer, rsu_state.revLength);
-                    rsu_client.BeginReceive(rsu_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(RSUReceiveCallBack), rsu_state);
+                    HanderOrgData(sks.RecBuffer, sks.Offset);                  
                 }
 
             }
-            catch (Exception ex)
-            {
-                IsConnRSU = false;
-                Log.WriteLog(DateTime.Now + " 天线接收回调异常\r\n" + ex.ToString() + "\r\n");
-                //MessageBox.Show(ex.ToString());
-            }
+
+                ));
         }
         #endregion
 
         #region    ******JG建立连接******
-        //激光控制器通信部分
+        SocketHelper.TcpClients JGTcpClient;
         public void JGConnect(string s_Jgip, string s_Jgport)
         {
-            try
-            {
-                jg_ip = IPAddress.Parse(s_Jgip);
-                jg_server = new IPEndPoint(jg_ip, Int32.Parse(s_Jgport));
-                jg_sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                jg_sock.BeginConnect(jg_server, new AsyncCallback(JGConnectCallback), jg_sock);
-                AddOperLogCacheStr("激光正在建立连接");
-                TcpReply(0x9D, jg_sock);
-
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLog(DateTime.Now + " 激光建立连接异常\r\n" + ex.ToString() + "\r\n");
-                //MessageBox.Show(ex.ToString());
-            }
+            JGTcpClient.InitSocket(s_Jgip, Convert.ToInt32(s_Jgport));
+            JGTcpClient.Start();
+            IsConnJG = true;
         }
-        //JG连接
-        public void JGConnectCallback(IAsyncResult ar)
-        {
-            try
-            {
-                Socket jg_client = (Socket)ar.AsyncState;
-                jg_client.EndConnect(ar);
-                try
-                {
-                    
-                    JGGetData();
-                    IsConnJG = true;
-                }
-                catch
-                {
-                    //IsConnJG = false;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLog(DateTime.Now + " 激光连接回调异常\r\n" + ex.ToString() + "\r\n");
-                //IsConnJG = false;
-            }
-
-        }
-        //JG接收
-        public void JGGetData()
-        {
-            try
-            {
-                StateObject jg_state = new StateObject();
-                jg_state.workSocket = jg_sock;
-                jg_sock.BeginReceive(jg_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(JGReceiveCallBack), jg_state);
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLog(DateTime.Now + " 激光接收数据异常\r\n" + ex.ToString() + "\r\n");
-                //IsConnJG = false;
-            }
-        }
-        //JG接收回调函数
-        public void JGReceiveCallBack(IAsyncResult ar)
-        {
-            try
-            {
-                StateObject jg_state = (StateObject)ar.AsyncState;
-                Socket jg_client = jg_state.workSocket;
-                jg_state.revLength = jg_client.EndReceive(ar);
-                if (jg_state.revLength == 0)
-                {
-                    AddOperLogCacheStr("激光断线了");
-                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  激光数据长度为0"+"\r\n");
-                    //链接断开了
-                    //jg_client.Close();
-                    //jg_sock.Close();
-                    //IsConnJG = false;
-                }
-                else if (jg_state.revLength > 0)
-                {
-                    HeartJGCount = 0;
-                    string ss = "";
-                    for (int i = 0; i < jg_state.revLength; i++)
-                    {
-                        ss += jg_state.buffer[i].ToString("X2");
-                        ss += " ";
-                    }
-                    Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  收到激光数据:" + ss + "\r\n");
-                    HanderOrgData(jg_state.buffer, jg_state.revLength);
-                    jg_client.BeginReceive(jg_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(JGReceiveCallBack), jg_state);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                //IsConnJG = false;
-                Log.WriteLog(DateTime.Now + " 激光接收回调异常\r\n" + ex.ToString() + "\r\n");
-            }
-        }
+        
         #endregion
 
-        #region ******数据库连接******
-        public static SqlConnection Conn
-        {
-            get
-            {
-                return new SqlConnection(connStr);
-            }
-        }
-        //执行SQL语句
-        public static SqlDataReader ExecuteQuery(string sqlStr)//(string sqlStr, params object[] param)
-        {
-            SqlCommand cmd = new SqlCommand(sqlStr, Conn);
-            cmd.Connection.Open();
-            try
-            {
-                return cmd.ExecuteReader();
-                //return cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-            }
-            catch (Exception)
-            {
-                cmd.Connection.Close();
-                throw;
-            }
-        }
-
-        private void SQLInit()
-        {
-            ////初始化数据库
-            if (false == InitSqlserver())
-            {
-                AddOperLogCacheStr("数据库连接失败！");
-                
-            }
-            else
-            {
-                AddOperLogCacheStr("数据库连接成功！");
-                
-            }
-        }
-
-        private bool InitSqlserver()
-        {
-            try
-            {
-                if (SQLconnection == null)
-                {
-                    string connectionString = @"Persist Security Info=True;User ID=" + sql_username + ";Password =" + sql_password + ";Initial Catalog=" + sql_dbname + ";Data Source=" + sql_ip;
-                    SQLconnection = new SqlConnection(connectionString);
-
-                    SQLconnection.Open();
-                }
-                else if (SQLconnection.State == System.Data.ConnectionState.Closed)
-                {
-                    SQLconnection.Open();
-                }
-                else if (SQLconnection.State == System.Data.ConnectionState.Broken)
-                {
-                    SQLconnection.Close();
-                    SQLconnection.Open();
-                }
-
-                //开数据库连接维护线程
-                DataBaseConThread = new Thread(DataBaseConThr);  //数据库连接维护线程
-                DataBaseConThread.IsBackground = true;//程序结束自动退出
-                DataBaseConThread.Priority = ThreadPriority.BelowNormal;//Highest，AboveNormal，Normal，BelowNormal，Lowest
-                DataBaseConThread.Start();
-
-            }
-            catch (System.Exception ex)
-            {
-                //MessageBox.Show(ex.ToString());
-                Log.WriteLog(DateTime.Now + " 数据库初始化异常\r\n" + ex.ToString() + "\r\n");
-                return false;
-            }
-
-            return true;
-
-        }
-        void DataBaseConThr(object statetemp)          //数据库连接维护线程
-        {
-            while (true)
-            {
-                if (SQLconnection.State == System.Data.ConnectionState.Closed)
-                {
-                    SQLconnection.Open();
-                }
-                else if (SQLconnection.State == System.Data.ConnectionState.Broken)
-                {
-                    SQLconnection.Close();
-                    SQLconnection.Open();
-                    AddOperLogCacheStr("数据库重连成功！");
-                    
-                }
-                Thread.Sleep(7000);
-            }
-
-        }
-        #endregion
-
-        #region ******数据库操作******
-        //插入激光数据
-        public bool InsertJGData(string s_JGCarLength, string s_JGCarWide, string s_JGCarType, string s_JGId, string s_CamPlateNum, string s_CamPicPath, string s_CamForceTime, string s_Cambiao, string s_CamPlateColor, string s_RandCode)
-        {
-            string InsertString = @"Insert into " + sql_dbname + ".dbo.JGInfo(JGLength,JGWide,JGCarType,CamPlateNum,ForceTime,Cambiao,CamPicPath,JGId,CamPlateColor,RandCode) values('" + s_JGCarLength + "','" + s_JGCarWide + "','" + s_JGCarType + "','" + s_CamPlateNum + "','" + s_CamForceTime + "','" + s_Cambiao + "','" + s_CamPicPath + "','" + s_JGId + "','" + s_CamPlateColor + "','" + s_RandCode + "')";
-            try
-            {
-                if (SQLconnection.State != System.Data.ConnectionState.Open)
-                {
-                    AddOperLogCacheStr("激光数据插入失败！");
-                    
-                    return false;
-                }
-                SqlCommand cmd = new SqlCommand(InsertString, SQLconnection);
-                cmd.ExecuteNonQuery();
-                AddOperLogCacheStr("激光数据插入成功！");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AddOperLogCacheStr("激光数据插入失败" + ex.ToString());
-                Log.WriteLog(DateTime.Now + " 激光数据入库异常\r\n" + ex.ToString() + "\r\n");
-                return false;
-            }
-        }
-        //插入RSU数据
-        public bool InsertRSUData(string s_OBUPlateColor, string s_OBUPlateNum, string s_OBUMac, string s_OBUY, string s_OBUCarLength, string s_OBUCarHigh, string s_OBUCarType, string s_TradeTime, string s_RandCode)
-        {
-            string InsertString = @"Insert into " + sql_dbname + ".dbo.OBUInfo(OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,RandCode) values('" + s_OBUPlateColor + "','" + s_OBUPlateNum + "','" + s_OBUMac + "','" + s_OBUY + "','" + s_OBUCarLength + "','" + s_OBUCarHigh + "','" + s_OBUCarType + "','" + s_TradeTime + "','" + s_RandCode + "')";
-            try
-            {
-                if (SQLconnection.State != System.Data.ConnectionState.Open)
-                {
-                    AddOperLogCacheStr("天线数据插入失败");
-                    return false;
-                }
-                SqlCommand cmd = new SqlCommand(InsertString, SQLconnection);
-                cmd.ExecuteNonQuery();
-                AddOperLogCacheStr("天线数据插入成功");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AddOperLogCacheStr("天线数据插入失败" + ex.ToString());
-                Log.WriteLog(DateTime.Now + " 天线数据入库异常\r\n" + ex.ToString() + "\r\n");
-                //MessageBox.Show(ex.ToString());
-                return false;
-            }
-        }
-        //数据更新通用函数
-        public bool UpdateSQLData(string SQLString)
-        {
-            try
-            {
-                if (SQLconnection.State != System.Data.ConnectionState.Open)
-                {
-                    AddOperLogCacheStr("数据更新失败");
-                    return false;
-                }
-                SqlCommand cmd = new SqlCommand(SQLString, SQLconnection);
-                cmd.ExecuteNonQuery();
-                AddOperLogCacheStr("数据更新成功");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                AddOperLogCacheStr("数据更新失败" + ex.ToString());
-                Log.WriteLog(DateTime.Now + " 数据库更新异常\r\n" + ex.ToString() + "\r\n");
-                //MessageBox.Show(ex.ToString());
-                return false;
-            }
-        }
-        #endregion
-
-        #region ******摄像机处理流程******
-        //摄像头初始化
-        private void initHK()
-        {
-            int res = 0;
-            bool m_bInitSDK = CHCNetSDK.NET_DVR_Init();
-            if (m_bInitSDK == true)
-            {
-                m_falarmData = new CHCNetSDK.MSGCallBack(MsgCallback);
-                bool btemp = CHCNetSDK.NET_DVR_SetDVRMessageCallBack_V30(m_falarmData, IntPtr.Zero);
-                if (btemp != true)
-                {
-                    AddOperLogCacheStr("SetDVRMessageCallBack_V30返回失败");
-                    return;
-                }
-                res = camera_Login();
-                if (res != 0)
-                {
-                    AddOperLogCacheStr("摄像头登录失败");
-                    return;
-                }
-                res = camera_SetAlarm();
-                if (res != 0)
-                {
-                    AddOperLogCacheStr("摄像头布防失败");
-                    return;
-                }
-                res = camera_StartListen();
-                if (res != 0)
-                {
-                    AddOperLogCacheStr("摄像头启动监听失败");
-                    return;
-                }
-                HKConnState = true;
-                AddOperLogCacheStr("Initialize返回0,摄像头连接成功！");
-            }
-            else
-            {
-                AddOperLogCacheStr("Initialize返回-1,摄像头连接失败！");
-            }
-        }
-
-        private int camera_Login()
-        {
-            string DVRIPAddress = HKCameraip;//设备IP地址或者域名 Device IP
-            Int16 DVRPortNumber = Int16.Parse("8000");//设备服务端口号 Device Port
-            string DVRUserName = HKCameraUsername;//设备登录用户名 User name to login
-            string DVRPassword = HKCameraPassword;//设备登录密码 Password to login
-            CHCNetSDK.NET_DVR_DEVICEINFO_V30 DeviceInfo = new CHCNetSDK.NET_DVR_DEVICEINFO_V30();
-
-            //登录设备 Login the device
-            m_lUserID = CHCNetSDK.NET_DVR_Login_V30(DVRIPAddress, DVRPortNumber, DVRUserName, DVRPassword, ref DeviceInfo);
-            if (m_lUserID < 0)
-            {
-                iLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                strErr = "NET_DVR_Login_V30 failed, error code= " + iLastErr; //登录失败，输出错误号 Failed to login and output the error code
-                Log.WriteLog(DateTime.Now + " 摄像机登录失败\r\n" + iLastErr + "\r\n");
-                //MessageBox.Show(strErr);
-                return -3;
-            }
-            else
-            {
-                //登录成功
-                iDeviceNumber++;
-                string str1 = "" + m_lUserID;
-                //listViewDevice.Items.Add(new ListViewItem(new string[] { str1, DVRIPAddress, "未布防" }));//将已注册设备添加进列表
-                return 0;
-            }
-        }
-        private int camera_SetAlarm()
-        {
-            CHCNetSDK.NET_DVR_SETUPALARM_PARAM struAlarmParam = new CHCNetSDK.NET_DVR_SETUPALARM_PARAM();
-            struAlarmParam.dwSize = (uint)Marshal.SizeOf(struAlarmParam);
-            struAlarmParam.byLevel = 1; //0- 一级布防,1- 二级布防
-            struAlarmParam.byAlarmInfoType = 1;//智能交通设备有效，新报警信息类型
-            struAlarmParam.byFaceAlarmDetection = 1;//1-人脸侦测
-
-            for (int i = 0; i < iDeviceNumber; i++)
-            {
-
-                m_lAlarmHandle = CHCNetSDK.NET_DVR_SetupAlarmChan_V41(m_lUserID, ref struAlarmParam);
-                if (m_lAlarmHandle < 0)
-                {
-                    iLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                    strErr = "布防失败，错误号：" + iLastErr; //布防失败，输出错误号
-                    //MessageBox.Show(strErr);
-                    return -1;
-                }
-
-            }
-            return 0;
-        }
-
-        private int camera_CloseAlarm()
-        {
-            for (int i = 0; i < iDeviceNumber; i++)
-            {
-
-                if (m_lAlarmHandle >= 0)
-                {
-                    if (!CHCNetSDK.NET_DVR_CloseAlarmChan_V30(m_lAlarmHandle))
-                    {
-                        iLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                        strErr = "撤防失败，错误号：" + iLastErr; //撤防失败，输出错误号                      
-                        //MessageBox.Show(strErr);
-                        return -1;
-                    }
-
-                }
-                else
-                {
-                    strErr = "未布防";
-                    //MessageBox.Show(strErr);
-                }
-            }
-            return 0;
-        }
-
-        private int camera_Exit()
-        {
-            int res = 0;
-            //撤防
-            res = camera_CloseAlarm();
-            if (res != 0) return res;
-
-            //停止监听
-            if (iListenHandle >= 0)
-            {
-                CHCNetSDK.NET_DVR_StopListen_V30(iListenHandle);
-            }
-
-            //注销登录
-            for (int i = 0; i < iDeviceNumber; i++)
-            {
-
-                CHCNetSDK.NET_DVR_Logout(m_lUserID);
-            }
-
-            //释放SDK资源，在程序结束之前调用
-            CHCNetSDK.NET_DVR_Cleanup();
-            return 0;
-
-        }
-
-        private int camera_StartListen()
-        {
-            byte[] strIP = new byte[16 * 16];
-            uint dwValidNum = 0;
-            Boolean bEnableBind = false;
-            string sLocalIP = "";
-            string sLocalPort = "7200";
-            ushort wLocalPort = ushort.Parse(sLocalPort);
-            int res = 0;
-            //获取本地PC网卡IP信息
-            if (CHCNetSDK.NET_DVR_GetLocalIP(strIP, ref dwValidNum, ref bEnableBind))
-            {
-                if (dwValidNum > 0)
-                {
-                    //取第一张网卡的IP地址为默认监听端口
-                    sLocalIP = System.Text.Encoding.UTF8.GetString(strIP, 0, 16);
-                }
-
-            }
-            iListenHandle = CHCNetSDK.NET_DVR_StartListen_V30(sLocalIP, wLocalPort, m_falarmData, IntPtr.Zero);
-            if (iListenHandle < 0)
-            {
-                iLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                strErr = "启动监听失败，错误号：" + iLastErr; //撤防失败，输出错误号
-                //MessageBox.Show(strErr);
-                return -1;
-            }
-            else
-            {
-
-                return 0;
-            }
-        }
-
-        private int camera_StopListen()
-        {
-
-            if (!CHCNetSDK.NET_DVR_StopListen_V30(iListenHandle))
-            {
-                iLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                strErr = "停止监听失败，错误号：" + iLastErr; //撤防失败，输出错误号
-                //MessageBox.Show(strErr);
-                return -1;
-            }
-            else
-            {
-                //MessageBox.Show("停止监听！");
-                return 0;
-            }
-        }
-        //强制抓拍
-        private int camera_ForceGetBigImage()
-        {
-            CHCNetSDK.NET_DVR_PLATE_RESULT struPlateResultInfo = new CHCNetSDK.NET_DVR_PLATE_RESULT();
-            struPlateResultInfo.pBuffer1 = Marshal.AllocHGlobal(2 * 1024 * 1024);
-            struPlateResultInfo.pBuffer2 = Marshal.AllocHGlobal(1024 * 1024);
-            CHCNetSDK.NET_DVR_MANUALSNAP struInter = new CHCNetSDK.NET_DVR_MANUALSNAP();
-            struInter.byLaneNo = 1;
-            if (!CHCNetSDK.NET_DVR_ManualSnap(m_lUserID, ref struInter, ref struPlateResultInfo))
-            {
-                uint iLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                string strErr = "NET_DVR_ManualSnap failed, error code= " + iLastErr;
-                AddOperLogCacheStr(strErr);
-
-                Marshal.FreeHGlobal(struPlateResultInfo.pBuffer1);
-                Marshal.FreeHGlobal(struPlateResultInfo.pBuffer2);
-                return -1;
-            }
-            else
-            {
-                int iLen = (int)struPlateResultInfo.dwPicLen; ;
-                if (iLen > 0)
-                {
-                    byte[] by = new byte[iLen];
-                    if (struPlateResultInfo.struPlateInfo.sLicense.Equals("无车牌"))
-                    {
-                        GetPlateNo = "未检测";
-                    }
-                    else
-                    {
-                        string temp = "";
-                        switch (struPlateResultInfo.struPlateInfo.byColor)
-                        {
-                            case 0:
-                                temp = "蓝";
-                                break;
-                            case 1:
-                                temp = "黄";
-                                break;
-                            case 2:
-                                temp = "白";
-                                break;
-                            case 3:
-                                temp = "黑";
-                                break;
-                            case 4:
-                                temp = "绿";
-                                break;
-                            default:
-                                break;
-                        }
-                        GetPlateNo = struPlateResultInfo.struPlateInfo.sLicense;
-                    }
-                    GetVehicleLogoRecog = "";
-                    GetVehicleLogoRecog = CHCNetSDK.VLR_VEHICLE_CLASS[struPlateResultInfo.struVehicleInfo.byVehicleLogoRecog];
-
-                    FlieClass fc = new FlieClass();
-                    string dirpath = ".\\image\\";
-                    DateTime forcetimedt = DateTime.Now;
-                    string forcetime = forcetimedt.ToString("yyyyMMddHHmmss");
-                    string imagename = forcetime + GetPlateNo + ".bmp";
-                    dirpath += DateTime.Now.Year.ToString();
-                    dirpath += "年\\";
-                    dirpath += DateTime.Now.Month.ToString();
-                    dirpath += "月\\";
-                    dirpath += DateTime.Now.Day.ToString();
-                    dirpath += "日\\";
-                    imagepath = dirpath + imagename;
-                    Marshal.Copy(struPlateResultInfo.pBuffer1, by, 0, iLen);
-                    try
-                    {
-                        if (true == fc.WriteFileImage(dirpath, imagename, by, 0, iLen))
-                        {
-                            Marshal.FreeHGlobal(struPlateResultInfo.pBuffer1);
-                            Marshal.FreeHGlobal(struPlateResultInfo.pBuffer2);
-                            return 0;
-                        }
-                        else
-                        {
-                            Marshal.FreeHGlobal(struPlateResultInfo.pBuffer1);
-                            Marshal.FreeHGlobal(struPlateResultInfo.pBuffer2);
-                            //AddOperLogCacheStr("保存车牌图片失败!");
-                            return -1;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        //AddOperLogCacheStr("保存车牌图片失败!");
-                        Marshal.FreeHGlobal(struPlateResultInfo.pBuffer1);
-                        Marshal.FreeHGlobal(struPlateResultInfo.pBuffer2);
-                        return -1;
-                    }
-                }
-            }
-            return 0;
-        }
-        public void MsgCallback(int lCommand, ref CHCNetSDK.NET_DVR_ALARMER pAlarmer, IntPtr pAlarmInfo, uint dwBufLen, IntPtr pUser)
-        {
-            //通过lCommand来判断接收到的报警信息类型，不同的lCommand对应不同的pAlarmInfo内容
-            switch (lCommand)
-            {
-                case CHCNetSDK.COMM_ITS_PLATE_RESULT://交通抓拍结果上传(新报警信息类型)
-                    ProcessCommAlarm_ITSPlate(ref pAlarmer, pAlarmInfo, dwBufLen, pUser);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-
-        private uint ProcessCommAlarm_ITSPlate(ref CHCNetSDK.NET_DVR_ALARMER pAlarmer, IntPtr pAlarmInfo, uint dwBufLen, IntPtr pUser)
-        {
-            DateTime dtS = DateTime.Now;
-            CHCNetSDK.NET_ITS_PLATE_RESULT struITSPlateResult = new CHCNetSDK.NET_ITS_PLATE_RESULT();
-            uint dwSize = (uint)Marshal.SizeOf(struITSPlateResult);
-            struITSPlateResult = (CHCNetSDK.NET_ITS_PLATE_RESULT)Marshal.PtrToStructure(pAlarmInfo, typeof(CHCNetSDK.NET_ITS_PLATE_RESULT));
-            TimeSpan ts = DateTime.Now - dtS;
-            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机抓拍完成时间1：" + ts.TotalMilliseconds + "\r\n");
-            AddOperLogCacheStr("进入报警布防回调函数,图片" + struITSPlateResult.dwPicNum.ToString() + "张..");
-            string res = "成功";
-            int iLen = (int)struITSPlateResult.struPicInfo[0].dwDataLen;
-            byte[] by = new byte[iLen];
-            if (iLen > 0) res = "成功";
-            else res = "失败";
-            AddOperLogCacheStr("取图返回:" + res);
-            if (struITSPlateResult.struPlateInfo.sLicense.Equals("无车牌"))
-            {
-                GetPlateNo = "未检测";
-            }
-            else
-            {
-                string temp = "";
-                switch (struITSPlateResult.struPlateInfo.byColor)
-                {
-                    case 0:
-                        temp = "蓝";
-                        break;
-                    case 1:
-                        temp = "黄";
-                        break;
-                    case 2:
-                        temp = "白";
-                        break;
-                    case 3:
-                        temp = "黑";
-                        break;
-                    case 4:
-                        temp = "绿";
-                        break;
-                    default:
-                        break;
-                }
-                GetPlateNo = struITSPlateResult.struPlateInfo.sLicense;
-            }
-            GetVehicleLogoRecog = "";
-            GetVehicleLogoRecog = CHCNetSDK.VLR_VEHICLE_CLASS[struITSPlateResult.struVehicleInfo.byVehicleLogoRecog];
-            FlieClass fc = new FlieClass();
-            string dirpath = ".\\plateimage\\";
-            DateTime forcetimedt = DateTime.Now;
-            string forcetime = forcetimedt.ToString("yyyyMMddHHmmss");
-            string imagename = forcetime + GetPlateNo + ".bmp";
-            dirpath += DateTime.Now.Year.ToString();
-            dirpath += "年\\";
-            dirpath += DateTime.Now.Month.ToString();
-            dirpath += "月\\";
-            dirpath += DateTime.Now.Day.ToString();
-            dirpath += "日\\";
-            imagepath = dirpath + imagename;
-            //暂时放这里
-            ts = DateTime.Now - dtS;
-            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机抓拍完成时间2：" + ts.TotalMilliseconds + "\r\n");
-            
-            Marshal.Copy(struITSPlateResult.struPicInfo[0].pBuffer, by, 0, iLen);
-            try
-            {
-                if (true == fc.WriteFileImage(dirpath, imagename, by, 0, iLen))
-                {
-                    CameraPicture.Set();
-                    ts = DateTime.Now - dtS;
-                    Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机抓拍完成时间3：" + ts.TotalMilliseconds + "\r\n");
-                }
-                else
-                {
-                    AddOperLogCacheStr("保存车牌图片失败!");
-                    return 1;
-                }
-            }
-            catch (Exception ex)
-            {
-                AddOperLogCacheStr("保存车牌图片失败!");
-                return 1;
-            }
-            return 0;
-        }
-        //布放回调函数（目前已取消）
-        public uint CaremaCallBackFunction(int dwCom)
-        {
-            AddOperLogCacheStr("布防回调,图片" + dwCom.ToString() + "张..");
-            string res = GetBigImage(1);
-            GetPlateNo = HKcamera.GetPlateNo(1, 0);
-            FlieClass fc = new FlieClass();
-            string dirpath = string.Format("{0}\\{1}\\", Application.StartupPath, "PlatePic");
-            DateTime forcetimedt = DateTime.Now;
-            string forcetime = forcetimedt.ToString("yyyyMMddHHmmss");
-            string imagename = forcetime + GetPlateNo + ".bmp";
-            dirpath += DateTime.Now.Year.ToString();
-            dirpath += "年\\";
-            dirpath += DateTime.Now.Month.ToString();
-            dirpath += "月\\";
-            dirpath += DateTime.Now.Day.ToString();
-            dirpath += "日\\";
-            imagepath = dirpath + imagename;
-            try
-            {
-                if (true == fc.WriteFileImage(dirpath, imagename, HKcamera.IdentInfo[1].VehImage, 0, HKcamera.IdentInfo[1].VehImageLen))
-                {
-                    //CameraPicture.Set();
-                }
-                else
-                {
-                    AddOperLogCacheStr("保存车牌图片失败!");
-                    return 1;
-                }
-            }
-            catch (Exception ex)
-            {
-                AddOperLogCacheStr("保存车牌图片失败!");
-                return 1;
-            }
-            return 0;
-        }
-        //取图，用于布放回调模式
-        public string GetBigImage(int laneno)
-        {
-            int res;
-            res = HKcamera.GetBigImage((byte)laneno, 0);
-            if (res == 0)
-            {
-                return ("取图返回 成功");
-            }
-            else
-            {
-                return ("取图返回" + res.ToString());
-            }
-        }
-        //强制抓拍
-        public int ForceGetBigImage(int laneno)
-        {
-            int res = HKcamera.ForceGetLanePlate(laneno);
-            if (res == 0)
-            {
-
-            }
-            else
-            {
-                return res;
-            }
-
-            res = HKcamera.GetBigImage((byte)laneno, 0);
-
-            if (res == 0)
-            {
-
-            }
-            else
-            {
-                return res;
-            }
-
-            GetPlateNo = HKcamera.GetPlateNo(1, 0);
-            FlieClass fc = new FlieClass();
-            string dirpath = ".\\image\\";
-            dirpath += DateTime.Now.Year.ToString();
-            dirpath += "年\\";
-            dirpath += DateTime.Now.Month.ToString();
-            dirpath += "月\\";
-            dirpath += DateTime.Now.Day.ToString();
-            dirpath += "日\\";
-            DateTime forcetimedt = DateTime.Now;
-            string forcetime = forcetimedt.ToString("yyyyMMddHHmmss");
-            string imagename = forcetime + GetPlateNo + ".bmp";
-            imagepath = dirpath + imagename;
-            forcetime = forcetimedt.ToString("yyyy-MM-dd HH:mm:ss");
-            if (true == fc.WriteFileImage(dirpath, imagename, HKcamera.IdentInfo[laneno].VehImage, 0, HKcamera.IdentInfo[laneno].VehImageLen))
-            {
-                return 0;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        #endregion
-
-         #region ******数据处理流程******
+        #region ******数据处理流程******
         //分包解包处理流程
         public void HanderOrgData(byte[] OrgBuff,int OrgBuffLen)
         {
@@ -1769,8 +939,6 @@ new ManualResetEvent(false);
             string sZuobistring = "";
             List<CarFullInfo> listAllCarInfo = new List<CarFullInfo>();
             Levenshtein LevenPercent = new Levenshtein();
-            bool isGetbyCode = false;
-            bool isGetbyPlate = false;
             string InsertString = "";
             string MarchFunction = "";
 
@@ -1780,13 +948,11 @@ new ManualResetEvent(false);
                 {
                     QueueRSUData qoutRSU = new QueueRSUData();
                     QueueJGData qoutJG = new QueueJGData();
-                    isGetbyCode = false;
-                    isGetbyPlate = false;
                     //先取ETC的数据
                     if (qRSUData.TryDequeue(out qoutRSU))
                     {
                         //先进行RSU数据存储
-                        isInRSUSql = InsertRSUData(qoutRSU.qOBUPlateColor, qoutRSU.qOBUPlateNum, 
+                        isInRSUSql = GlobalMember.SQLInter.InsertRSUData(qoutRSU.qOBUPlateColor, qoutRSU.qOBUPlateNum, 
                             qoutRSU.qOBUMac, qoutRSU.qOBUY, qoutRSU.qOBUCarLength, qoutRSU.qOBUCarhigh, 
                             qoutRSU.qOBUCarType, qoutRSU.qOBUDateTime, qoutRSU.qRSURandCode.ToString("X2"));
                         if (!isInRSUSql)
@@ -1851,7 +1017,7 @@ new ManualResetEvent(false);
                                     + listAllCarInfo[i].sOBUY + "','" + listAllCarInfo[i].sOBUCarLength + "','" + listAllCarInfo[i].sOBUCarHigh + "','"
                                     + listAllCarInfo[i].sOBUCartype + "','" + listAllCarInfo[i].sOBUDateTime + "','" + sZuobistring + "','"
                                     + listAllCarInfo[i].sRSURandCode + "','" + "车牌匹配" + "')";
-                                UpdateSQLData(InsertString);
+                                GlobalMember.SQLInter.UpdateSQLData(InsertString);
                                 listAllCarInfo.RemoveAt(i);
                                 Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + MarchFunction+"成功" + qoutRSU.qRSURandCode.ToString("X2") + "OBU车牌：" + qoutRSU.qOBUPlateNum + "\r\n");
                                 break;
@@ -1872,7 +1038,7 @@ new ManualResetEvent(false);
                                     + listAllCarInfo[0].sOBUY + "','" + listAllCarInfo[0].sOBUCarLength + "','" + listAllCarInfo[0].sOBUCarHigh + "','"
                                     + listAllCarInfo[0].sOBUCartype + "','" + listAllCarInfo[0].sOBUDateTime + "','" + "未知" + "','"
                                     + listAllCarInfo[0].sRSURandCode + "','" + "未能匹配" + "')";
-                                UpdateSQLData(InsertString);
+                                GlobalMember.SQLInter.UpdateSQLData(InsertString);
                                 listAllCarInfo.RemoveAt(0);
                                 Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " RSU触发队列已满，首位清空" + "OBU车牌：" + listAllCarInfo[0].sOBUPlateNum + "识别车牌：" + listAllCarInfo[0].sCamPlateNum + "\r\n");
                             }
@@ -1891,7 +1057,7 @@ new ManualResetEvent(false);
                     if (qJGData.TryDequeue(out qoutJG))
                     {
                         //入库
-                        InsertJGData(qoutJG.qJGLength, qoutJG.qJGWide, qoutJG.qJGCarType, 
+                        GlobalMember.SQLInter.InsertJGData(qoutJG.qJGLength, qoutJG.qJGWide, qoutJG.qJGCarType, 
                             qoutJG.qJGId, qoutJG.qCamPlateNum, qoutJG.qCamPicPath, qoutJG.qJGDateTime, 
                             qoutJG.qCambiao, qoutJG.qCamPlateColor, qoutJG.qJGRandCode.ToString("X2"));
                         for (int i = listAllCarInfo.Count - 1; i >= 0; i--)
@@ -1946,7 +1112,7 @@ new ManualResetEvent(false);
                                     + listAllCarInfo[i].sOBUY + "','" + listAllCarInfo[i].sOBUCarLength + "','" + listAllCarInfo[i].sOBUCarHigh + "','"
                                     + listAllCarInfo[i].sOBUCartype + "','" + listAllCarInfo[i].sOBUDateTime + "','" + sZuobistring + "','"
                                     + listAllCarInfo[i].sRSURandCode + "','" + MarchFunction + "')";
-                                UpdateSQLData(InsertString);
+                                GlobalMember.SQLInter.UpdateSQLData(InsertString);
                                 listAllCarInfo.RemoveAt(i);
                                 Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + MarchFunction+"成功" + "识别车牌：" + qoutJG.qCamPlateNum + "\r\n");
                                 //弱强制匹配
@@ -1973,7 +1139,7 @@ new ManualResetEvent(false);
                                             + listAllCarInfo[i-2].sOBUY + "','" + listAllCarInfo[i-2].sOBUCarLength + "','" + listAllCarInfo[i-2].sOBUCarHigh + "','"
                                             + listAllCarInfo[i-2].sOBUCartype + "','" + listAllCarInfo[i-2].sOBUDateTime + "','" + "强制匹配作弊不详" + "','"
                                             + listAllCarInfo[i-2].sRSURandCode + "','" + "强制匹配" + "')";
-                                        UpdateSQLData(InsertString);
+                                        GlobalMember.SQLInter.UpdateSQLData(InsertString);
                                         
                                         Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + MarchFunction + "成功" + listAllCarInfo[i - 2].sRSURandCode + "OBU车牌：" + listAllCarInfo[i - 2].sOBUPlateNum + "\r\n");
                                         listAllCarInfo.RemoveAt(i - 1);
@@ -1998,7 +1164,7 @@ new ManualResetEvent(false);
                                     + listAllCarInfo[0].sOBUY + "','" + listAllCarInfo[0].sOBUCarLength + "','" + listAllCarInfo[0].sOBUCarHigh + "','"
                                     + listAllCarInfo[0].sOBUCartype + "','" + listAllCarInfo[0].sOBUDateTime + "','" + "未知" + "','"
                                     + listAllCarInfo[0].sRSURandCode + "','" + "未能匹配" + "')";
-                                UpdateSQLData(InsertString);
+                                GlobalMember.SQLInter.UpdateSQLData(InsertString);
                                 listAllCarInfo.RemoveAt(0);
                                 Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " RSU触发队列已满，首位清空" + "OBU车牌：" + listAllCarInfo[0].sOBUPlateNum + "识别车牌：" + listAllCarInfo[0].sCamPlateNum + "\r\n");
                             }
@@ -2068,24 +1234,33 @@ new ManualResetEvent(false);
             {
                 case 0x81:
                     //激光数据
-                    TcpReply(0x18, jg_sock);
+                    HeartJGCount = 0;
+                    TcpReply(0x18, JGTcpClient);
                     HanderJGData(p_pBuffer, p_nLen);
                     break;
-                //case 0x9D:
-                //    //RSU的心跳
-                //    TcpReply(0xD9, rsu_sock);
-                //    break;
+                case 0x9D:
+                    //RSU的心跳
+                    HeartRSUCount = 0;
+                    TcpReply(0xD9, RSUTcpClient);
+                    break;
+                case 0xD9:
+                    //激光心跳
+                    HeartJGCount = 0;
+                    break;
                 case 0xD8:
                     //激光位置
+                    HeartJGCount = 0;
                     SaveLocation(p_pBuffer, p_nLen);
                     break;
                 case 0x7D:
                     //ETC数据
-                    TcpReply(0xD7, rsu_sock);
+                    HeartRSUCount = 0;
+                    TcpReply(0xD7, RSUTcpClient);
                     HanderRSUData(p_pBuffer, p_nLen);
                     break;
                 case 0x82:
                     //通知摄像机即将抓拍
+                    HeartJGCount = 0;
                     HanderJGStartCam(p_pBuffer, p_nLen);
                     break;
                 default:
@@ -2112,7 +1287,7 @@ new ManualResetEvent(false);
             }
         }
 
-        public void TcpReply(byte command, Socket sk)
+        public void TcpReply(byte command, SocketHelper.TcpClients sk)
         {
 
             int send_lenth = 0;
@@ -2121,26 +1296,22 @@ new ManualResetEvent(false);
             send_buffer[send_lenth++] = command;
             send_buffer[send_lenth++] = 0x00;
             datah.DataCoding(ref send_buffer, ref send_lenth);
-            if (sk == jg_sock)
+            if (sk == JGTcpClient)
             {
-                if (IsConnJG == false)
-                    return;
                 try
                 {
-                    jg_sock.Send(send_buffer, 0, send_lenth, 0);
+                    JGTcpClient.SendByteData(send_buffer, send_lenth);
                 }
                 catch (Exception ex)
                 {
                     AddOperLogCacheStr("回复激光异常" + ex.ToString());
                 }
             }
-            else if (sk == rsu_sock)
+            else if (sk == RSUTcpClient)
             {
-                if (IsConnRSU == false)
-                    return;
                 try
                 {
-                    rsu_sock.Send(send_buffer, 0, send_lenth, 0);
+                    RSUTcpClient.SendByteData(send_buffer, send_lenth);
                 }
                 catch (Exception ex)
                 {
@@ -2168,7 +1339,8 @@ new ManualResetEvent(false);
             try
             {
                 string sss = "";
-                jg_sock.Send(send_buffer, 0, send_lenth, 0);
+                JGTcpClient.SendByteData(send_buffer, send_lenth);
+                //jg_sock.Send(send_buffer, 0, send_lenth, 0);
                 for (int i = 0; i < send_lenth; i++)
                 {
                     sss += send_buffer[i].ToString("X2");
@@ -2277,11 +1449,11 @@ new ManualResetEvent(false);
             m_qJG.qJGId = ((ushort)(databuff[3 + st] << 8 | databuff[4 + st])).ToString();
             if (OpenForce.Checked)
             {
-                int res = camera_ForceGetBigImage();
+                int res = GlobalMember.HKCameraInter.camera_ForceGetBigImage();
                 if (res == 0)
                 {
                     match_flag = true;
-                    m_qJG.qCamPicPath = imagepath;
+                    m_qJG.qCamPicPath = HKCamera.imagepath;
                     AddOperLogCacheStr("强制抓拍成功");
                 }
                 else
@@ -2297,7 +1469,7 @@ new ManualResetEvent(false);
                 if (CameraPicture.WaitOne(1400))
                 {
                     match_flag = true;//匹配成功 
-                    m_qJG.qCamPicPath = imagepath;
+                    m_qJG.qCamPicPath = HKCamera.imagepath;
                 }
                 else
                 {
@@ -2309,22 +1481,22 @@ new ManualResetEvent(false);
             
             if (match_flag == true)
             {
-                if (GetPlateNo == "未检测")
+                if (HKCamera.GetPlateNo == "未检测")
                 {
                     m_qJG.qCamPlateColor = "未检测";
-                    m_qJG.qCamPlateNum = GetPlateNo;
+                    m_qJG.qCamPlateNum = HKCamera.GetPlateNo;
                     m_qJG.qCambiao = "未知";
                 }
                 else
                 {
-                    if (GetPlateNo.Length > 3)
+                    if (HKCamera.GetPlateNo.Length > 3)
                     {
-                        m_qJG.qCamPlateColor = GetPlateNo.Substring(0, 1);
-                        m_qJG.qCamPlateNum = GetPlateNo.Substring(1);
-                        m_qJG.qCambiao = GetVehicleLogoRecog;
+                        m_qJG.qCamPlateColor = HKCamera.GetPlateNo.Substring(0, 1);
+                        m_qJG.qCamPlateNum = HKCamera.GetPlateNo.Substring(1);
+                        m_qJG.qCambiao = HKCamera.GetVehicleLogoRecog;
                     }
                 }
-                m_qJG.qCamPicPath = imagepath;
+                m_qJG.qCamPicPath = HKCamera.imagepath;
             }
             else
             {
@@ -2354,9 +1526,9 @@ new ManualResetEvent(false);
         #endregion
 
         #region******天线数据解析与加入队列******
+        HanderRSUDataToQueue HRSUDataToQ = new HanderRSUDataToQueue();
         public void HanderRSUData(byte[] databuff, int bufflen)
         {
-            int st = 2;
             string ss = "";
             for (int i = 0; i < bufflen; i++)
             {
@@ -2365,119 +1537,18 @@ new ManualResetEvent(false);
             }
             AddOperLogCacheStr("收到天线数据" + ss);
             QueueRSUData m_qRSU = new QueueRSUData();
-            m_qRSU.qOBUMac = databuff[2 + st].ToString("X2") + databuff[3 + st].ToString("X2") + databuff[4 + st].ToString("X2") + databuff[5 + st].ToString("X2");
-            m_qRSU.qOBUY = ((ushort)(databuff[8 + st] << 8 | databuff[9 + st])).ToString();
-            int sit = 0;
-            m_qRSU.qOBUPlateNum = databuff[10 + st].ToString("X2") + databuff[11 + st].ToString("X2") + databuff[12 + st].ToString("X2") + databuff[13 + st].ToString("X2") + databuff[14 + st].ToString("X2") + databuff[15 + st].ToString("X2") + databuff[16 + st].ToString("X2");
-            while (databuff[16 + sit + 1+st] != 0x00)
-            {
-                m_qRSU.qOBUPlateNum += databuff[17 + sit+st].ToString("X2");
-                sit++;
-            }
-            //m_qRSU.qOBUPlateNum = databuff[10 + st].ToString("X2") + databuff[11 + st].ToString("X2") + databuff[12 + st].ToString("X2") + databuff[13 + st].ToString("X2") + databuff[14 + st].ToString("X2") + databuff[15 + st].ToString("X2") + databuff[16 + st].ToString("X2") + databuff[17 + st].ToString("X2") + databuff[18 + st].ToString("X2") + databuff[19 + st].ToString("X2") + databuff[20 + st].ToString("X2") + databuff[21 + st].ToString("X2") + databuff[22 + st].ToString("X2");
-            m_qRSU.qOBUPlateNum = Encoding.GetEncoding("GB2312").GetString(HexStringToByteArray(m_qRSU.qOBUPlateNum));
-            switch (databuff[23 + st])
-            {
-                case 0:
-                    m_qRSU.qOBUPlateColor = "蓝色";
-                    break;
-                case 1:
-                    m_qRSU.qOBUPlateColor = "黄色";
-                    break;
-                case 2:
-                    m_qRSU.qOBUPlateColor = "黑色";
-                    break;
-                case 3:
-                    m_qRSU.qOBUPlateColor = "白色";
-                    break;
-                default:
-                    m_qRSU.qOBUPlateColor = "未知";
-                    break;
-            }
-            m_qRSU.qOBUCarLength = ((ushort)(databuff[25 + st] << 8 | databuff[26 + st])).ToString()+"00";
-            m_qRSU.qOBUCarhigh = databuff[28 + st].ToString()+"00";
-            m_qRSU.qOBUBiao="";
-            for (int i = 0; i < 16; i++)
-            {
-                m_qRSU.qOBUBiao += databuff[40 + i].ToString("X2");
+            m_qRSU = HRSUDataToQ.HanderRSUDataIn(databuff, bufflen);
             
-            }
-            m_qRSU.qOBUBiao = Encoding.GetEncoding("GB2312").GetString(HexStringToByteArray(m_qRSU.qOBUBiao));
-            m_qRSU.qOBUDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
-            g_lUnixTime = GetUnixTime();
-            m_qRSU.qRSURandCode = g_lUnixTime;
-            //SendLocation((ushort)(databuff[8 + st] << 8 | databuff[9 + st]), m_qRSU.qRSURandCode);
-            SendLocation(0xfdfd, m_qRSU.qRSURandCode);
-            switch (databuff[24 + st])
-            {
-                case 1:
-                    m_qRSU.qOBUCarType = "客1";
-                    break;
-                case 2:
-                    m_qRSU.qOBUCarType = "客2";
-                    break;
-                case 3:
-                    m_qRSU.qOBUCarType = "客3";
-                    break;
-                case 4:
-                    m_qRSU.qOBUCarType = "客4";
-                    break;
-                case 5:
-                    m_qRSU.qOBUCarType = "货1";
-                    break;
-                case 6:
-                    m_qRSU.qOBUCarType = "货2";
-                    break;
-                case 7:
-                    m_qRSU.qOBUCarType = "货3";
-                    break;
-                case 8:
-                    m_qRSU.qOBUCarType = "货4";
-                    break;
-                case 9:
-                    m_qRSU.qOBUCarType = "货5";
-                    break;
-                case 10:
-                    m_qRSU.qOBUCarType = "货6";
-                    break;
-                case 11:
-                    m_qRSU.qOBUCarType = "货7";
-                    break;
-                default:
-                    m_qRSU.qOBUCarType = "未知";
-                    break;
-            }
-            Count++;
-            m_qRSU.qCount = Count.ToString();
-            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  天线入栈:" 
-                + " 车牌："+m_qRSU.qOBUPlateNum+" 车型："+m_qRSU.qOBUCarType+" OBUY位置："
-                +m_qRSU.qOBUY+" 随机码："+m_qRSU.qRSURandCode.ToString("X2") + "\r\n");
-            //Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 天线入栈原始数据：" + ss + "\r\n");
+            SendLocation((ushort)(databuff[8 + 2] << 8 | databuff[9 + 2]), m_qRSU.qRSURandCode);
+            //SendLocation(0xfdfd, m_qRSU.qRSURandCode);
+            
             lock (qRSUData)
             {
                 qRSUData.Enqueue(m_qRSU);//列入RSU数据缓存中
             }
-
             rsu_inQueueDone.Set();
         }
-        public static byte[] HexStringToByteArray(string s)
-        {
-            s = s.Replace(" ", "").Trim().ToUpper();
-            byte[] buffer = new byte[s.Length / 2];
-            for (int i = 0; i < s.Length; i += 2)
-                buffer[i / 2] = (byte)Convert.ToByte(s.Substring(i, 2), 16);
-            return buffer;
-        }
-
-        public long GetUnixTime()
-        {
-            DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1, 0, 0, 0));
-            DateTime nowTime = DateTime.Now;
-            long unixTime = (long)Math.Round((nowTime - startTime).TotalSeconds, MidpointRounding.AwayFromZero);
-            return unixTime;
-        }
         #endregion
-
 
         private void qqButton3_Click(object sender, EventArgs e)
         {
@@ -2561,7 +1632,7 @@ new ManualResetEvent(false);
                 }
                 string CarSerch = "select * from " + sql_dbname + ".dbo.CarInfo where TradeTime > '" + this.dateStartTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "' and TradeTime < '" + this.dateEndTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'" + limit_select + "  order by ID";//车道号
 
-                SqlDataReader sdr = ExecuteQuery(CarSerch);
+                SqlDataReader sdr = SQLServerInter.ExecuteQuery(CarSerch);
                 bool flag1 = false;
                 while (sdr.Read())
                 {
@@ -2599,22 +1670,22 @@ new ManualResetEvent(false);
             HeartRSUCount++;
             //if (IsConnJG)
             //{
-            TcpReply(0x9D, jg_sock);
+            TcpReply(0x9D, JGTcpClient);
             //}
             if (HeartJGCount >= 5)
             {
                 IsConnJG = false;
                 //链接断开了
-                jg_sock.Close();
-                IsConnJG = false;
+                JGTcpClient.Stop();
                 HeartJGCount = 0;
                 Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 激光控制器心跳检测超时，激光通信断开重连\r\n");
             }
             if (HeartRSUCount >= 5)
             {
+                //IsConnRSU = false;
+                //rsu_sock.Close();
                 IsConnRSU = false;
-                rsu_sock.Close();
-                IsConnRSU = false;
+                RSUTcpClient.Stop();
                 HeartRSUCount = 0;
                 Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 天线控制器心跳检测超时，天线通信断开重连\r\n");
             }
@@ -2622,10 +1693,11 @@ new ManualResetEvent(false);
         //窗口关闭退出环境，防止残留线程
         private void FormDemo_FormClosed(object sender, FormClosedEventArgs e)
         {
+            //JGTcpClient.Stop();
+            //RSUTcpClient.Stop();
             Application.Exit();
             Environment.Exit(0);
+            
         }
-
-
     }
 }

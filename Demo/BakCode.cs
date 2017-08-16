@@ -587,5 +587,384 @@ namespace ETCF
         //        Thread.Sleep(1);
         //    }
         //}
+        ////RSU通信部分
+        //public void RSUConnect(string s_Rsuip, string s_Rsuport)
+        //{
+        //    try
+        //    {
+        //        rsu_ip = IPAddress.Parse(s_Rsuip);
+        //        rsu_server = new IPEndPoint(rsu_ip, Int32.Parse(s_Rsuport));
+        //        rsu_sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        //        rsu_sock.BeginConnect(rsu_server, new AsyncCallback(RSUConnectCallback), rsu_sock);
+        //        AddOperLogCacheStr("天线正在建立连接");
+
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.WriteLog(DateTime.Now + " 天线建立连接异常\r\n" + ex.ToString() + "\r\n");
+
+        //        //MessageBox.Show(ex.ToString());
+        //    }
+        //}
+        ////RSU连接
+        //public void RSUConnectCallback(IAsyncResult ar)
+        //{
+        //    try
+        //    {
+        //        Socket rsu_client = (Socket)ar.AsyncState;
+        //        rsu_client.EndConnect(ar);
+        //        try
+        //        {
+        //            RSUGetData();
+        //            IsConnRSU = true;
+        //        }
+        //        catch
+        //        {
+        //            IsConnRSU = false;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.WriteLog(DateTime.Now + " 天线连接回调异常\r\n" + ex.ToString() + "\r\n");
+        //        //MessageBox.Show(ex.ToString());
+        //    }
+
+        //}
+        ////RSU接收
+        //public void RSUGetData()
+        //{
+        //    try
+        //    {
+        //        StateObject rsu_state = new StateObject();
+        //        rsu_state.workSocket = rsu_sock;
+        //        rsu_sock.BeginReceive(rsu_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(RSUReceiveCallBack), rsu_state);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.WriteLog(DateTime.Now + " 天线接收数据异常\r\n" + ex.ToString() + "\r\n");
+        //        //MessageBox.Show(ex.ToString());
+        //    }
+        //}
+        ////RSU接收回调函数
+        //public void RSUReceiveCallBack(IAsyncResult ar)
+        //{
+        //    try
+        //    {
+        //        StateObject rsu_state = (StateObject)ar.AsyncState;
+        //        Socket rsu_client = rsu_state.workSocket;
+        //        rsu_state.revLength = rsu_client.EndReceive(ar);
+        //        if (rsu_state.revLength == 0)
+        //        {
+        //            AddOperLogCacheStr("天线断线了");
+
+        //            //链接断开了
+        //            //rsu_client.Close();
+        //            //rsu_sock.Close();
+        //            IsConnRSU = false;
+        //            //连接激光控制器
+        //            //这里进行维护，暂未修改
+        //            //RSUConnect(RSUip, RSUport);
+
+        //        }
+        //        else if (rsu_state.revLength > 0)
+        //        {
+        //            HeartRSUCount = 0;
+        //            if(rsu_state.buffer[3]==0x9D)
+        //            {
+        //                TcpReply(0xD9, rsu_sock);
+        //            }
+        //            string ss = "";
+        //            for (int i = 0; i < rsu_state.revLength; i++)
+        //            {
+        //                ss += rsu_state.buffer[i].ToString("X2");
+        //                ss += " ";
+        //            }
+        //            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  收到天线数据:" + ss + "\r\n");
+        //            HanderOrgData(rsu_state.buffer, rsu_state.revLength);
+        //            rsu_client.BeginReceive(rsu_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(RSUReceiveCallBack), rsu_state);
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        IsConnRSU = false;
+        //        Log.WriteLog(DateTime.Now + " 天线接收回调异常\r\n" + ex.ToString() + "\r\n");
+        //        //MessageBox.Show(ex.ToString());
+        //    }
+        //}
+
+        ////激光控制器通信部分
+        //public void JGConnect(string s_Jgip, string s_Jgport)
+        //{
+        //    try
+        //    {
+        //        jg_ip = IPAddress.Parse(s_Jgip);
+        //        jg_server = new IPEndPoint(jg_ip, Int32.Parse(s_Jgport));
+        //        jg_sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        //        jg_sock.BeginConnect(jg_server, new AsyncCallback(JGConnectCallback), jg_sock);
+        //        AddOperLogCacheStr("激光正在建立连接");
+        //        TcpReply(0x9D, jg_sock);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.WriteLog(DateTime.Now + " 激光建立连接异常\r\n" + ex.ToString() + "\r\n");
+        //        //MessageBox.Show(ex.ToString());
+        //    }
+        //}
+        ////JG连接
+        //public void JGConnectCallback(IAsyncResult ar)
+        //{
+        //    try
+        //    {
+        //        Socket jg_client = (Socket)ar.AsyncState;
+        //        jg_client.EndConnect(ar);
+        //        try
+        //        {
+
+        //            JGGetData();
+        //            IsConnJG = true;
+        //        }
+        //        catch
+        //        {
+        //            //IsConnJG = false;
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.WriteLog(DateTime.Now + " 激光连接回调异常\r\n" + ex.ToString() + "\r\n");
+        //        //IsConnJG = false;
+        //    }
+
+        //}
+        ////JG接收
+        //public void JGGetData()
+        //{
+        //    try
+        //    {
+        //        StateObject jg_state = new StateObject();
+        //        jg_state.workSocket = jg_sock;
+        //        jg_sock.BeginReceive(jg_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(JGReceiveCallBack), jg_state);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.WriteLog(DateTime.Now + " 激光接收数据异常\r\n" + ex.ToString() + "\r\n");
+        //        //IsConnJG = false;
+        //    }
+        //}
+        ////JG接收回调函数
+        //public void JGReceiveCallBack(IAsyncResult ar)
+        //{
+        //    try
+        //    {
+        //        StateObject jg_state = (StateObject)ar.AsyncState;
+        //        Socket jg_client = jg_state.workSocket;
+        //        jg_state.revLength = jg_client.EndReceive(ar);
+        //        if (jg_state.revLength == 0)
+        //        {
+        //            AddOperLogCacheStr("激光断线了");
+        //            Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  激光数据长度为0"+"\r\n");
+        //            //链接断开了
+        //            //jg_client.Close();
+        //            //jg_sock.Close();
+        //            //IsConnJG = false;
+        //        }
+        //        else if (jg_state.revLength > 0)
+        //        {
+        //            HeartJGCount = 0;
+        //            string ss = "";
+        //            for (int i = 0; i < jg_state.revLength; i++)
+        //            {
+        //                ss += jg_state.buffer[i].ToString("X2");
+        //                ss += " ";
+        //            }
+        //            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  收到激光数据:" + ss + "\r\n");
+        //            HanderOrgData(jg_state.buffer, jg_state.revLength);
+        //            jg_client.BeginReceive(jg_state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(JGReceiveCallBack), jg_state);
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //IsConnJG = false;
+        //        Log.WriteLog(DateTime.Now + " 激光接收回调异常\r\n" + ex.ToString() + "\r\n");
+        //    }
+        //}
+
+        //#region ******数据库连接******
+        //public static SqlConnection Conn
+        //{
+        //    get
+        //    {
+        //        return new SqlConnection(connStr);
+        //    }
+        //}
+        ////执行SQL语句
+        //public static SqlDataReader ExecuteQuery(string sqlStr)//(string sqlStr, params object[] param)
+        //{
+        //    SqlCommand cmd = new SqlCommand(sqlStr, Conn);
+        //    cmd.Connection.Open();
+        //    try
+        //    {
+        //        return cmd.ExecuteReader();
+        //        //return cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        cmd.Connection.Close();
+        //        throw;
+        //    }
+        //}
+
+        //private void SQLInit()
+        //{
+        //    ////初始化数据库
+        //    if (false == InitSqlserver())
+        //    {
+        //        AddOperLogCacheStr("数据库连接失败！");
+
+        //    }
+        //    else
+        //    {
+        //        AddOperLogCacheStr("数据库连接成功！");
+
+        //    }
+        //}
+
+        //private bool InitSqlserver()
+        //{
+        //    try
+        //    {
+        //        if (SQLconnection == null)
+        //        {
+        //            string connectionString = @"Persist Security Info=True;User ID=" + sql_username + ";Password =" + sql_password + ";Initial Catalog=" + sql_dbname + ";Data Source=" + sql_ip;
+        //            SQLconnection = new SqlConnection(connectionString);
+
+        //            SQLconnection.Open();
+        //        }
+        //        else if (SQLconnection.State == System.Data.ConnectionState.Closed)
+        //        {
+        //            SQLconnection.Open();
+        //        }
+        //        else if (SQLconnection.State == System.Data.ConnectionState.Broken)
+        //        {
+        //            SQLconnection.Close();
+        //            SQLconnection.Open();
+        //        }
+
+        //        //开数据库连接维护线程
+        //        DataBaseConThread = new Thread(DataBaseConThr);  //数据库连接维护线程
+        //        DataBaseConThread.IsBackground = true;//程序结束自动退出
+        //        DataBaseConThread.Priority = ThreadPriority.BelowNormal;//Highest，AboveNormal，Normal，BelowNormal，Lowest
+        //        DataBaseConThread.Start();
+
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        //MessageBox.Show(ex.ToString());
+        //        Log.WriteLog(DateTime.Now + " 数据库初始化异常\r\n" + ex.ToString() + "\r\n");
+        //        return false;
+        //    }
+
+        //    return true;
+
+        //}
+
+        //void DataBaseConThr(object statetemp)          //数据库连接维护线程
+        //{
+        //    while (true)
+        //    {
+        //        if (SQLconnection.State == System.Data.ConnectionState.Closed)
+        //        {
+        //            SQLconnection.Open();
+        //        }
+        //        else if (SQLconnection.State == System.Data.ConnectionState.Broken)
+        //        {
+        //            SQLconnection.Close();
+        //            SQLconnection.Open();
+        //            AddOperLogCacheStr("数据库重连成功！");
+
+        //        }
+        //        Thread.Sleep(7000);
+        //    }
+
+        //}
+        //#endregion
+
+        //#region ******数据库操作******
+        ////插入激光数据
+        //public bool InsertJGData(string s_JGCarLength, string s_JGCarWide, string s_JGCarType, string s_JGId, string s_CamPlateNum, string s_CamPicPath, string s_CamForceTime, string s_Cambiao, string s_CamPlateColor, string s_RandCode)
+        //{
+        //    string InsertString = @"Insert into " + sql_dbname + ".dbo.JGInfo(JGLength,JGWide,JGCarType,CamPlateNum,ForceTime,Cambiao,CamPicPath,JGId,CamPlateColor,RandCode) values('" + s_JGCarLength + "','" + s_JGCarWide + "','" + s_JGCarType + "','" + s_CamPlateNum + "','" + s_CamForceTime + "','" + s_Cambiao + "','" + s_CamPicPath + "','" + s_JGId + "','" + s_CamPlateColor + "','" + s_RandCode + "')";
+        //    try
+        //    {
+        //        if (SQLconnection.State != System.Data.ConnectionState.Open)
+        //        {
+        //            AddOperLogCacheStr("激光数据插入失败！");
+
+        //            return false;
+        //        }
+        //        SqlCommand cmd = new SqlCommand(InsertString, SQLconnection);
+        //        cmd.ExecuteNonQuery();
+        //        AddOperLogCacheStr("激光数据插入成功！");
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddOperLogCacheStr("激光数据插入失败" + ex.ToString());
+        //        Log.WriteLog(DateTime.Now + " 激光数据入库异常\r\n" + ex.ToString() + "\r\n");
+        //        return false;
+        //    }
+        //}
+        ////插入RSU数据
+        //public bool InsertRSUData(string s_OBUPlateColor, string s_OBUPlateNum, string s_OBUMac, string s_OBUY, string s_OBUCarLength, string s_OBUCarHigh, string s_OBUCarType, string s_TradeTime, string s_RandCode)
+        //{
+        //    string InsertString = @"Insert into " + sql_dbname + ".dbo.OBUInfo(OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,RandCode) values('" + s_OBUPlateColor + "','" + s_OBUPlateNum + "','" + s_OBUMac + "','" + s_OBUY + "','" + s_OBUCarLength + "','" + s_OBUCarHigh + "','" + s_OBUCarType + "','" + s_TradeTime + "','" + s_RandCode + "')";
+        //    try
+        //    {
+        //        if (SQLconnection.State != System.Data.ConnectionState.Open)
+        //        {
+        //            AddOperLogCacheStr("天线数据插入失败");
+        //            return false;
+        //        }
+        //        SqlCommand cmd = new SqlCommand(InsertString, SQLconnection);
+        //        cmd.ExecuteNonQuery();
+        //        AddOperLogCacheStr("天线数据插入成功");
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddOperLogCacheStr("天线数据插入失败" + ex.ToString());
+        //        Log.WriteLog(DateTime.Now + " 天线数据入库异常\r\n" + ex.ToString() + "\r\n");
+        //        //MessageBox.Show(ex.ToString());
+        //        return false;
+        //    }
+        //}
+        ////数据更新通用函数
+        //public bool UpdateSQLData(string SQLString)
+        //{
+        //    try
+        //    {
+        //        if (SQLconnection.State != System.Data.ConnectionState.Open)
+        //        {
+        //            AddOperLogCacheStr("数据更新失败");
+        //            return false;
+        //        }
+        //        SqlCommand cmd = new SqlCommand(SQLString, SQLconnection);
+        //        cmd.ExecuteNonQuery();
+        //        AddOperLogCacheStr("数据更新成功");
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AddOperLogCacheStr("数据更新失败" + ex.ToString());
+        //        Log.WriteLog(DateTime.Now + " 数据库更新异常\r\n" + ex.ToString() + "\r\n");
+        //        //MessageBox.Show(ex.ToString());
+        //        return false;
+        //    }
+        //}
+        //#endregion
     }
 }
