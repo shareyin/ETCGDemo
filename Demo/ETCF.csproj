@@ -77,9 +77,9 @@
       <DependentUpon>FormDemo.cs</DependentUpon>
     </Compile>
     <Compile Include="GlobalMember.cs" />
-    <Compile Include="Interface\CHCNetSDK.cs" />
-    <Compile Include="Interface\HKCamera.cs" />
-    <Compile Include="Interface\IdentifierInfo.cs" />
+    <Compile Include="HKInterface\CHCNetSDK.cs" />
+    <Compile Include="HKInterface\HKCamera.cs" />
+    <Compile Include="HKInterface\IdentifierInfo.cs" />
     <Compile Include="Levenshtein.cs" />
     <Compile Include="myButtonCheck.cs">
       <SubType>UserControl</SubType>
