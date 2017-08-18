@@ -567,7 +567,10 @@ namespace ETCF
                 Sockets sks = new Sockets();
                 if (client != null)
                 {
-                    client.Client.Shutdown(SocketShutdown.Both);
+                    if (client.Connected)
+                    {
+                        client.Client.Shutdown(SocketShutdown.Both);
+                    }
                     Thread.Sleep(10);
                     client.Close();
                     IsClose = true;

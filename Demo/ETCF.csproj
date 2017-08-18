@@ -63,6 +63,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BakCode.cs" />
+    <Compile Include="CameraInterface\IPCCamera.cs" />
+    <Compile Include="CameraInterface\ipcsdk.cs" />
     <Compile Include="DataCoding\DataHander.cs" />
     <Compile Include="DataCoding\HanderJGData.cs" />
     <Compile Include="DataCoding\HanderRSUDataToQueue.cs" />
@@ -76,10 +78,10 @@
     <Compile Include="FormDemo.Designer.cs">
       <DependentUpon>FormDemo.cs</DependentUpon>
     </Compile>
-    <Compile Include="GlobalMember.cs" />
-    <Compile Include="HKInterface\CHCNetSDK.cs" />
-    <Compile Include="HKInterface\HKCamera.cs" />
-    <Compile Include="HKInterface\IdentifierInfo.cs" />
+    <Compile Include="Global\GlobalMember.cs" />
+    <Compile Include="CameraInterface\CHCNetSDK.cs" />
+    <Compile Include="CameraInterface\HKCamera.cs" />
+    <Compile Include="CameraInterface\IdentifierInfo.cs" />
     <Compile Include="Levenshtein.cs" />
     <Compile Include="myButtonCheck.cs">
       <SubType>UserControl</SubType>

@@ -128,6 +128,11 @@ namespace ETCF
         
         public int HeartJGCount = 0;//激光未收到数据心跳计数
         public int HeartRSUCount = 0;//天线未收到数据心跳计数
+
+        //功能配置
+        public string CameraType;
+        public string OpenLocationPipei;
+
         #endregion
 
         #region ******数据库相关参数******
@@ -161,6 +166,8 @@ namespace ETCF
         private string HKCameraip;
         private string HKCameraUsername;
         private string HKCameraPassword;
+
+        private string IPCCameraip;
         //摄像机相关参数
         
         //private Int32 m_lUserID = -1;
@@ -213,6 +220,18 @@ namespace ETCF
             HKCameraUsername = temp.ToString();
             GetPrivateProfileString("HKCameraconfig", "Password", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
             HKCameraPassword = temp.ToString();
+
+            GetPrivateProfileString("IPCCameraconfig", "CameIP", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
+            IPCCameraip = temp.ToString();
+
+            GetPrivateProfileString("SoftFunction", "CameraType", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
+            CameraType = temp.ToString();
+
+            GetPrivateProfileString("SoftFunction", "OpenLocation", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
+            OpenLocationPipei = temp.ToString();
+
+
+
         }
         private void btnReadConfig_Click(object sender, EventArgs e)
         {
@@ -312,9 +331,18 @@ namespace ETCF
             }
             try
             {
-                //摄像机连接
-                GlobalMember.HKCameraInter = new HKCamera(this);
-                GlobalMember.HKCameraInter.initHK(HKCameraip,HKCameraUsername,HKCameraPassword);
+                if (CameraType == "HK")
+                {
+                    //摄像机连接
+                    GlobalMember.HKCameraInter = new HKCamera(this);
+                    GlobalMember.HKCameraInter.initHK(HKCameraip, HKCameraUsername, HKCameraPassword);
+                }
+                else if (CameraType == "IPC")
+                {
+                    GlobalMember.IPCCameraInter = new IPCCamera(this);
+                    GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                }
+                
                
             }
             catch (Exception ex)
@@ -332,6 +360,14 @@ namespace ETCF
             catch (Exception ex)
             {
                 Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 数据库初始化异常\r\n" + ex.ToString() + "\r\n");
+            }
+            if (OpenLocationPipei == "1")
+            {
+                OpenLocation.Checked=true;
+            }
+            else if (OpenLocationPipei == "0")
+            {
+                OpenLocation.Checked = false;
             }
             //维护线程
             ProtectPro();
@@ -358,17 +394,35 @@ namespace ETCF
         {
             while (true)
             {
-                //摄像头重连
-                if (HKCamera.HKConnState == false)
+                if (CameraType == "HK")
                 {
-                    pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
-                    GlobalMember.HKCameraInter = new HKCamera(this);
-                    GlobalMember.HKCameraInter.initHK(HKCameraip, HKCameraUsername, HKCameraPassword);
-                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
+                    //摄像头重连
+                    if (HKCamera.HKConnState == false)
+                    {
+                        pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
+                        GlobalMember.HKCameraInter = new HKCamera(this);
+                        GlobalMember.HKCameraInter.initHK(HKCameraip, HKCameraUsername, HKCameraPassword);
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
+                    }
+                    else
+                    {
+                        pictureBoxCam.BackgroundImage = Image.FromFile(@GreenicoPath);
+                    }
                 }
-                else
+                else if (CameraType == "IPC")
                 {
-                    pictureBoxCam.BackgroundImage = Image.FromFile(@GreenicoPath);
+                    //摄像头重连
+                    if (IPCCamera.IPCConnState == false)
+                    {
+                        pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
+                        GlobalMember.IPCCameraInter = new IPCCamera(this);
+                        GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
+                    }
+                    else
+                    {
+                        pictureBoxCam.BackgroundImage = Image.FromFile(@GreenicoPath);
+                    }
                 }
                 //RSU重连
                 if (!IsConnRSU)
@@ -1449,18 +1503,21 @@ namespace ETCF
             m_qJG.qJGId = ((ushort)(databuff[3 + st] << 8 | databuff[4 + st])).ToString();
             if (OpenForce.Checked)
             {
-                int res = GlobalMember.HKCameraInter.camera_ForceGetBigImage();
-                if (res == 0)
+                if (CameraType == "HK")
                 {
-                    match_flag = true;
-                    m_qJG.qCamPicPath = HKCamera.imagepath;
-                    AddOperLogCacheStr("强制抓拍成功");
-                }
-                else
-                {
-                    match_flag = false;
-                    m_qJG.qCamPicPath = "未知";
-                    AddOperLogCacheStr("强制抓拍失败");
+                    int res = GlobalMember.HKCameraInter.camera_ForceGetBigImage();
+                    if (res == 0)
+                    {
+                        match_flag = true;
+                        m_qJG.qCamPicPath = HKCamera.imagepath;
+                        AddOperLogCacheStr("强制抓拍成功");
+                    }
+                    else
+                    {
+                        match_flag = false;
+                        m_qJG.qCamPicPath = "未知";
+                        AddOperLogCacheStr("强制抓拍失败");
+                    }
                 }
             }
             else
@@ -1481,22 +1538,44 @@ namespace ETCF
             
             if (match_flag == true)
             {
-                if (HKCamera.GetPlateNo == "未检测")
+                if (CameraType == "HK")
                 {
-                    m_qJG.qCamPlateColor = "未检测";
-                    m_qJG.qCamPlateNum = HKCamera.GetPlateNo;
-                    m_qJG.qCambiao = "未知";
-                }
-                else
-                {
-                    if (HKCamera.GetPlateNo.Length > 3)
+                    if (HKCamera.GetPlateNo == "未检测")
                     {
-                        m_qJG.qCamPlateColor = HKCamera.GetPlateNo.Substring(0, 1);
-                        m_qJG.qCamPlateNum = HKCamera.GetPlateNo.Substring(1);
-                        m_qJG.qCambiao = HKCamera.GetVehicleLogoRecog;
+                        m_qJG.qCamPlateColor = "未检测";
+                        m_qJG.qCamPlateNum = HKCamera.GetPlateNo;
+                        m_qJG.qCambiao = "未知";
                     }
+                    else
+                    {
+                        if (HKCamera.GetPlateNo.Length > 3)
+                        {
+                            m_qJG.qCamPlateColor = HKCamera.GetPlateNo.Substring(0, 1);
+                            m_qJG.qCamPlateNum = HKCamera.GetPlateNo;
+                            m_qJG.qCambiao = HKCamera.GetVehicleLogoRecog;
+                        }
+                    }
+                    m_qJG.qCamPicPath = HKCamera.imagepath;
                 }
-                m_qJG.qCamPicPath = HKCamera.imagepath;
+                else if (CameraType == "IPC")
+                {
+                    if (IPCCamera.GetPlateNo == "未检测")
+                    {
+                        m_qJG.qCamPlateColor = "未检测";
+                        m_qJG.qCamPlateNum = IPCCamera.GetPlateNo;
+                        m_qJG.qCambiao = "未知";
+                    }
+                    else
+                    {
+                        if (IPCCamera.GetPlateNo.Length > 3)
+                        {
+                            m_qJG.qCamPlateColor = IPCCamera.PlateColor;
+                            m_qJG.qCamPlateNum = IPCCamera.GetPlateNo;
+                            m_qJG.qCambiao = IPCCamera.GetVehicleLogoRecog;
+                        }
+                    }
+                    m_qJG.qCamPicPath = IPCCamera.imagepath;
+                }
             }
             else
             {

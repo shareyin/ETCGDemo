@@ -12,6 +12,8 @@ namespace ETCF
 
         public static HKCamera HKCameraInter = null;
 
+        public static IPCCamera IPCCameraInter = null;
+
         public static SQLServerInter SQLInter = null;
     }
 }
