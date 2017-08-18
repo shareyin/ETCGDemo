@@ -43,8 +43,8 @@ namespace ETCF
                     m_qRSU.qOBUPlateColor = "未知";
                     break;
             }
-            m_qRSU.qOBUCarLength = ((ushort)(databuff[25 + st] << 8 | databuff[26 + st])).ToString() + "00";
-            m_qRSU.qOBUCarhigh = databuff[28 + st].ToString() + "00";
+            m_qRSU.qOBUCarLength = ((ushort)(databuff[26 + st] << 8 | databuff[27 + st])).ToString() + "00";
+            m_qRSU.qOBUCarhigh = databuff[29 + st].ToString() + "00";
             m_qRSU.qOBUBiao = "";
             for (int i = 0; i < 16; i++)
             {

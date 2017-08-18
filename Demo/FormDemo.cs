@@ -183,6 +183,7 @@ namespace ETCF
         //public volatile bool HKConnState = false;
         //HKCamera HKCameraInterface = new HKCamera(this);
         public ManualResetEvent CameraPicture = new ManualResetEvent(false);
+        public ManualResetEvent CameraCanpost = new ManualResetEvent(false);
         #endregion
 
         #region ******配置文件******
@@ -685,7 +686,7 @@ namespace ETCF
                         WriteOperLog(OperLogCacheStr.ToString());
                         if (GlobalMember.WriteLogSwitch)
                         {
-                            Log.WriteLog(OperLogCacheStr.ToString());
+                            Log.WritePlateLog(OperLogCacheStr.ToString());
                         }
                         OperLogCacheStr.Clear();
                     }
@@ -1523,10 +1524,18 @@ namespace ETCF
             else
             {
                 CameraPicture.Reset();
-                if (CameraPicture.WaitOne(1400))
+                CameraCanpost.Set();
+                if (CameraPicture.WaitOne(400))
                 {
                     match_flag = true;//匹配成功 
-                    m_qJG.qCamPicPath = HKCamera.imagepath;
+                    if (CameraType == "HK")
+                    {
+                        m_qJG.qCamPicPath = HKCamera.imagepath;
+                    }
+                    else if (CameraType == "IPC")
+                    {
+                        m_qJG.qCamPicPath = IPCCamera.imagepath;
+                    }
                 }
                 else
                 {
