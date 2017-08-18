@@ -62,7 +62,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BakCode.cs" />
     <Compile Include="CameraInterface\IPCCamera.cs" />
     <Compile Include="CameraInterface\ipcsdk.cs" />
     <Compile Include="DataCoding\DataHander.cs" />

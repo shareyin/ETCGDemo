@@ -7,7 +7,7 @@ namespace ETCF
 {
     class GlobalMember
     {
-        public static bool WriteLogSwitch = false;
+        public static bool WriteLogSwitch = true;
         public static int OperLogFreshTime = 500;//单位ms
 
         public static HKCamera HKCameraInter = null;
