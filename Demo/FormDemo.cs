@@ -340,8 +340,8 @@ namespace ETCF
                 }
                 else if (CameraType == "IPC")
                 {
-                    GlobalMember.IPCCameraInter = new IPCCamera(this);
-                    GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                    //GlobalMember.IPCCameraInter = new IPCCamera(this);
+                    //GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
                 }
                 
                
@@ -416,9 +416,9 @@ namespace ETCF
                     if (IPCCamera.IPCConnState == false)
                     {
                         pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
-                        GlobalMember.IPCCameraInter = new IPCCamera(this);
-                        GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
-                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
+                        //GlobalMember.IPCCameraInter = new IPCCamera(this);
+                        //GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                        //Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
                     }
                     else
                     {

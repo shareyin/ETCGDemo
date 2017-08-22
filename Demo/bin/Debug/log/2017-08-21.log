@@ -1,0 +1,177 @@
+2017-08-21 10:42:39 连接摄像机异常
+System.DllNotFoundException: 无法加载 DLL“ice_ipcsdk.dll”: 找不到指定的模块。 (异常来自 HRESULT:0x8007007E)。
+   在 ETCF.ipcsdk.ICE_IPCSDK_Init()
+   在 ETCF.IPCCamera.initIPC(String IPCCameraip) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\CameraInterface\IPCCamera.cs:行号 33
+   在 ETCF.FormDemo.FormDemo_Load(Object sender, EventArgs e) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 344
+2017/8/21 10:42:40 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 10:43:38 系统异常
+System.UnhandledExceptionEventArgs
+2017-08-21 17:34:58 连接天线异常
+System.Net.Sockets.SocketException (0x80004005): 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。 172.18.212.1:8080
+   在 System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   在 System.Net.Sockets.Socket.Connect(EndPoint remoteEP)
+   在 System.Net.Sockets.TcpClient.Connect(IPEndPoint remoteEP)
+   在 ETCF.SocketHelper.TcpClients.Connect() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 523
+   在 ETCF.SocketHelper.TcpClients.Start() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 563
+   在 ETCF.FormDemo.RSUConnect(String s_Rsuip, String s_Rsuport) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 815
+   在 ETCF.FormDemo.FormDemo_Load(Object sender, EventArgs e) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 316
+2017-08-21 17:35:19 连接激光异常
+System.Net.Sockets.SocketException (0x80004005): 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。 172.18.212.1:5004
+   在 System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   在 System.Net.Sockets.Socket.Connect(EndPoint remoteEP)
+   在 System.Net.Sockets.TcpClient.Connect(IPEndPoint remoteEP)
+   在 ETCF.SocketHelper.TcpClients.Connect() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 523
+   在 ETCF.SocketHelper.TcpClients.Start() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 563
+   在 ETCF.FormDemo.JGConnect(String s_Jgip, String s_Jgport) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 849
+   在 ETCF.FormDemo.FormDemo_Load(Object sender, EventArgs e) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 326
+2017/8/21 17:36:04 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:36:05 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:36:32 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:36:35 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:36:36 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:36:57 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:37:03 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:37:04 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:37:04 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:37:05 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:37:06 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:37:07 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:37:19 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:37:19 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:37:21 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:37:22 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:37:33 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:38:02 异常
+System.Exception: 客户端没有初始化.!
+2017/8/21 17:38:03 异常
+System.Exception: 客户端没有初始化.!
+2017/8/21 17:38:03 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:38:04 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:38:15 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:38:15 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:38:16 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:38:19 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:38:21 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017-08-21 17:38:55 连接天线异常
+System.Net.Sockets.SocketException (0x80004005): 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。 172.18.212.1:8080
+   在 System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   在 System.Net.Sockets.Socket.Connect(EndPoint remoteEP)
+   在 System.Net.Sockets.TcpClient.Connect(IPEndPoint remoteEP)
+   在 ETCF.SocketHelper.TcpClients.Connect() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 523
+   在 ETCF.SocketHelper.TcpClients.Start() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 563
+   在 ETCF.FormDemo.RSUConnect(String s_Rsuip, String s_Rsuport) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 815
+   在 ETCF.FormDemo.FormDemo_Load(Object sender, EventArgs e) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 316
+2017-08-21 17:39:16 连接激光异常
+System.Net.Sockets.SocketException (0x80004005): 由于连接方在一段时间后没有正确答复或连接的主机没有反应，连接尝试失败。 172.18.212.1:5004
+   在 System.Net.Sockets.Socket.DoConnect(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   在 System.Net.Sockets.Socket.Connect(EndPoint remoteEP)
+   在 System.Net.Sockets.TcpClient.Connect(IPEndPoint remoteEP)
+   在 ETCF.SocketHelper.TcpClients.Connect() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 523
+   在 ETCF.SocketHelper.TcpClients.Start() 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 563
+   在 ETCF.FormDemo.JGConnect(String s_Jgip, String s_Jgport) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 849
+   在 ETCF.FormDemo.FormDemo_Load(Object sender, EventArgs e) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\FormDemo.cs:行号 326
+2017/8/21 17:45:10 192.168.2.71:5004异常
+System.IO.IOException: 无法从传输连接中读取数据: 您的主机中的软件中止了一个已建立的连接。。 ---> System.Net.Sockets.SocketException: 您的主机中的软件中止了一个已建立的连接。
+   在 System.Net.Sockets.Socket.BeginReceive(Byte[] buffer, Int32 offset, Int32 size, SocketFlags socketFlags, AsyncCallback callback, Object state)
+   在 System.Net.Sockets.NetworkStream.BeginRead(Byte[] buffer, Int32 offset, Int32 size, AsyncCallback callback, Object state)
+   --- 内部异常堆栈跟踪的结尾 ---
+   在 System.Net.Sockets.NetworkStream.BeginRead(Byte[] buffer, Int32 offset, Int32 size, AsyncCallback callback, Object state)
+   在 ETCF.SocketHelper.TcpClients.EndReader(IAsyncResult ir) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 545
+2017/8/21 17:45:35 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:45:43 异常
+System.Exception: 客户端无连接..
+2017-08-21 17:45:43 天线控制器已检测断开，正在重连
+2017/8/21 17:45:44 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:45:45 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:45:46 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:45:51 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:46:03 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:46:07 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:46:07 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:46:08 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:46:12 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:46:20 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:46:20 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:46:30 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:46:31 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:46:31 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:46:45 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:46:46 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:46:46 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:47:02 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:47:03 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:47:03 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:47:04 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
+2017/8/21 17:47:13 异常
+System.Exception: 客户端没有初始化.!
+2017/8/21 17:47:16 异常
+System.Exception: 客户端没有初始化.!
+2017/8/21 17:47:23 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:47:24 异常
+System.Exception: 客户端无连接..
+2017/8/21 17:47:31 系统异常
+System.UnhandledExceptionEventArgs
+2017/8/21 17:47:31 异常
+System.NullReferenceException: 未将对象引用设置到对象的实例。
+   在 ETCF.SocketHelper.TcpClients.SendByteData(Byte[] SendByteData, Int32 Slen) 位置 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\Demo\SocketHelper.cs:行号 491
