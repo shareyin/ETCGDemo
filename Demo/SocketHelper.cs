@@ -454,7 +454,7 @@ namespace ETCF
                     if (client == null || !client.Connected)
                     {
                         Sockets sks = new Sockets();
-                        sks.ex = new Exception("客户端无连接..");
+                        sks.ex = new Exception("发送数据失败，客户端无连接..");
                         sks.ClientDispose = true;
                         pushSockets.Invoke(sks);//推送至UI 
                     }
@@ -484,7 +484,7 @@ namespace ETCF
                     if (client == null || !client.Connected)
                     {
                         Sockets sks = new Sockets();
-                        sks.ex = new Exception("客户端无连接..");
+                        sks.ex = new Exception("发送数据失败，客户端无连接..");
                         sks.ClientDispose = true;
                         pushSockets.Invoke(sks);//推送至UI 
                     }

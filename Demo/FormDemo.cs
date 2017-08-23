@@ -306,7 +306,7 @@ namespace ETCF
             }
             catch (Exception ex)
             {
-                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 配置文件读取异常\r\n" + ex.ToString() + "\r\n");
+                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 配置文件读取异常\r\n" + ex.ToString() + "\r\n");
                 return;
             }
             try
@@ -317,7 +317,7 @@ namespace ETCF
             }
             catch (Exception ex)
             {
-                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 连接天线异常\r\n" + ex.ToString() + "\r\n");
+                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 连接天线异常\r\n" + ex.ToString() + "\r\n");
             }
             try
             {
@@ -327,7 +327,7 @@ namespace ETCF
             }
             catch (Exception ex)
             {
-                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 连接激光异常\r\n" + ex.ToString() + "\r\n");
+                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 连接激光异常\r\n" + ex.ToString() + "\r\n");
                 MessageBox.Show(ex.ToString());
             }
             try
@@ -348,7 +348,7 @@ namespace ETCF
             }
             catch (Exception ex)
             {
-                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 连接摄像机异常\r\n" + ex.ToString() + "\r\n");
+                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 连接摄像机异常\r\n" + ex.ToString() + "\r\n");
             }
             try
             {
@@ -360,7 +360,7 @@ namespace ETCF
             }
             catch (Exception ex)
             {
-                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 数据库初始化异常\r\n" + ex.ToString() + "\r\n");
+                Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 数据库初始化异常\r\n" + ex.ToString() + "\r\n");
             }
             if (OpenLocationPipei == "1")
             {
@@ -403,7 +403,7 @@ namespace ETCF
                         pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
                         GlobalMember.HKCameraInter = new HKCamera(this);
                         GlobalMember.HKCameraInter.initHK(HKCameraip, HKCameraUsername, HKCameraPassword);
-                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机已检测断开，正在重连\r\n");
                     }
                     else
                     {
@@ -418,7 +418,7 @@ namespace ETCF
                         pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
                         GlobalMember.IPCCameraInter = new IPCCamera(this);
                         GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
-                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机已检测断开，正在重连\r\n");
                     }
                     else
                     {
@@ -430,7 +430,7 @@ namespace ETCF
                 {
                     pictureBoxRSU.BackgroundImage = Image.FromFile(@RedicoPath);
                     RSUConnect(RSUip, RSUport);
-                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 天线控制器已检测断开，正在重连\r\n");
+                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 天线控制器已检测断开，正在重连\r\n");
                 }
                 else
                 {
@@ -441,7 +441,7 @@ namespace ETCF
                 {
                     pictureBoxJG.BackgroundImage = Image.FromFile(@RedicoPath);
                     JGConnect(JGip, JGport);
-                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 激光控制器已检测断开，正在重连\r\n");
+                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 激光控制器已检测断开，正在重连\r\n");
                 }
                 else
                 {
@@ -841,7 +841,14 @@ namespace ETCF
                     else
                     {
                         Stateque.revLength = sks.Offset;
-                        Array.Copy(sks.RecBuffer, Stateque.buffer, sks.Offset);
+                        try
+                        {
+                            Array.Copy(sks.RecBuffer, Stateque.buffer, sks.Offset);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + sks.Ip + "接收异常 " + "Offset长度：" + sks.Offset.ToString() + " resBuffer长度：" + sks.RecBuffer.Length.ToString()+ "\r\n" + sks.ex.ToString() + "\r\n");
+                        }
                         lock (Locker1)
                         {
                             queue.Enqueue(Stateque);
@@ -1736,7 +1743,7 @@ namespace ETCF
                 {
                     limit_select = " and TradeState='可能作弊'";
                 }
-                string CarSerch = "select * from " + sql_dbname + ".dbo.CarInfo where TradeTime > '" + this.dateStartTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "' and TradeTime < '" + this.dateEndTime.Value.ToString("yyyy-MM-dd HH:mm:ss") + "'" + limit_select + "  order by ID";//车道号
+                string CarSerch = "select * from " + sql_dbname + ".dbo.CarInfo where TradeTime > '" + this.dateStartTime.Value.ToString("yyyy-MM-dd HH:mm:ss:fff") + "' and TradeTime < '" + this.dateEndTime.Value.ToString("yyyy-MM-dd HH:mm:ss:fff") + "'" + limit_select + "  order by ID";//车道号
 
                 SqlDataReader sdr = SQLServerInter.ExecuteQuery(CarSerch);
                 bool flag1 = false;
@@ -1784,7 +1791,7 @@ namespace ETCF
                 //链接断开了
                 JGTcpClient.Stop();
                 HeartJGCount = 0;
-                Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 激光控制器心跳检测超时，激光通信断开重连\r\n");
+                Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 激光控制器心跳检测超时，激光通信断开重连\r\n");
             }
             if (HeartRSUCount >= 5)
             {
@@ -1793,14 +1800,14 @@ namespace ETCF
                 IsConnRSU = false;
                 RSUTcpClient.Stop();
                 HeartRSUCount = 0;
-                Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 天线控制器心跳检测超时，天线通信断开重连\r\n");
+                Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 天线控制器心跳检测超时，天线通信断开重连\r\n");
             }
         }
         //窗口关闭退出环境，防止残留线程
         private void FormDemo_FormClosed(object sender, FormClosedEventArgs e)
         {
-            //JGTcpClient.Stop();
-            //RSUTcpClient.Stop();
+            JGTcpClient.Stop();
+            RSUTcpClient.Stop();
             Environment.Exit(0);
             Application.Exit();
             

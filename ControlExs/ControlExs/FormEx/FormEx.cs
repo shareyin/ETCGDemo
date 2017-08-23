@@ -358,34 +358,44 @@ namespace ControlExs
             }
 
             //draw fringe
-            RenderHelper.DrawFormFringe(this, e.Graphics, _formFringe, Radius);
+            try
+            {
+                RenderHelper.DrawFormFringe(this, e.Graphics, _formFringe, Radius);
+            }
+            catch
+            { }
 
             //draw icon
-            if (Icon != null && ShowIcon)
+            try
             {
-                e.Graphics.DrawIcon(Icon, IconRect);
+                if (Icon != null && ShowIcon)
+                {
+                    e.Graphics.DrawIcon(Icon, IconRect);
+                }
             }
+            catch
+            { }
 
             //draw text
-            if (Text.Length != 0)
-            {
-                if (TextWithShadow)
-                {
-                    using (Image textImg = RenderHelper.GetStringImgWithShadowEffect(Text, TextFont, TextForeColor, TextShadowColor, TextShadowWidth))
-                    {
-                        e.Graphics.DrawImage(textImg,TextRect.Location);
-                    }
-                }
-                else
-                {
-                    TextRenderer.DrawText(
-                    e.Graphics,
-                    Text, TextFont,
-                    TextRect,
-                    TextForeColor,
-                    TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
-                }
-            }
+            //if (Text.Length != 0)
+            //{
+            //    if (TextWithShadow)
+            //    {
+            //        using (Image textImg = RenderHelper.GetStringImgWithShadowEffect(Text, TextFont, TextForeColor, TextShadowColor, TextShadowWidth))
+            //        {
+            //            e.Graphics.DrawImage(textImg,TextRect.Location);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        TextRenderer.DrawText(
+            //        e.Graphics,
+            //        Text, TextFont,
+            //        TextRect,
+            //        TextForeColor,
+            //        TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
+            //    }
+            //}
 
         }
 
