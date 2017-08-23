@@ -340,8 +340,8 @@ namespace ETCF
                 }
                 else if (CameraType == "IPC")
                 {
-                    //GlobalMember.IPCCameraInter = new IPCCamera(this);
-                    //GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                    GlobalMember.IPCCameraInter = new IPCCamera(this);
+                    GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
                 }
                 
                
@@ -416,9 +416,9 @@ namespace ETCF
                     if (IPCCamera.IPCConnState == false)
                     {
                         pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
-                        //GlobalMember.IPCCameraInter = new IPCCamera(this);
-                        //GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
-                        //Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
+                        GlobalMember.IPCCameraInter = new IPCCamera(this);
+                        GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " 摄像机已检测断开，正在重连\r\n");
                     }
                     else
                     {
@@ -725,7 +725,7 @@ namespace ETCF
         {
             lock (UpdateOperLog_LockObj)
             {
-                OperLogCacheStr.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\r\n" + log + "\r\n\r\n");
+                OperLogCacheStr.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + log + "\r\n\r\n");
             }
         }
         /********************新添加完事*****************/
@@ -822,17 +822,32 @@ namespace ETCF
         //通用接收，接入缓存
         private void Rec(SocketHelper.Sockets sks)
         {
+            
             this.Invoke(new ThreadStart(delegate
             {
                 if (sks.ex != null)
                 {
                     //MessageBox.Show(sks.ex.Message);
-                    Log.WriteLog(DateTime.Now.ToString() +" "+sks.Ip+ "异常\r\n" + sks.ex.ToString() + "\r\n");
+                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + sks.Ip + "Socket异常\r\n" + sks.ex.ToString() + "\r\n");
                     
                 }
                 else
                 {
-                    HanderOrgData(sks.RecBuffer, sks.Offset);                  
+                    StateObject Stateque = new StateObject();
+                    if (sks.Offset == 0)
+                    {
+                        //do nothing
+                    }
+                    else
+                    {
+                        Stateque.revLength = sks.Offset;
+                        Array.Copy(sks.RecBuffer, Stateque.buffer, sks.Offset);
+                        lock (Locker1)
+                        {
+                            queue.Enqueue(Stateque);
+                        }
+                    }
+                    //HanderOrgData(sks.RecBuffer, sks.Offset);                  
                 }
 
             }
@@ -921,54 +936,57 @@ namespace ETCF
             while (true)
             {
                 StateObject Stateque = new StateObject();
-                if (queue.TryDequeue(out Stateque))
+                lock (queue)
                 {
-                    byte[] ReceiveBuf = new byte[Stateque.revLength];
-                    //数据处理，循环解析
-                    int gcnt = 0;
-                    //读取成功
-                    for (int i = 0; i < Stateque.revLength; i++)
+                    if (queue.TryDequeue(out Stateque))
                     {
-                        //找到帧头
-                        if (gcnt == 0)
+                        byte[] ReceiveBuf = new byte[Stateque.revLength];
+                        //数据处理，循环解析
+                        int gcnt = 0;
+                        //读取成功
+                        for (int i = 0; i < Stateque.revLength; i++)
                         {
-                            if (Stateque.buffer[i] == 0xFF)
+                            //找到帧头
+                            if (gcnt == 0)
                             {
-                                ReceiveBuf[0] = Stateque.buffer[i];
-                                gcnt = 1;
-                            }
-                        }
-                        else if (gcnt == 1)
-                        {
-                            if (Stateque.buffer[i] == 0xFF)
-                            {
-                                ReceiveBuf[1] = Stateque.buffer[i];
-                                gcnt = 2;
-                            }
-                            else
-                            {
-                                gcnt = 0;
-                                continue;
-                            }
-                        }
-                        else
-                        {
-                            if (Stateque.buffer[i] == 0xFF)
-                            {
-                                ReceiveBuf[gcnt++] = Stateque.buffer[i];
-                                if (gcnt > 3)
+                                if (Stateque.buffer[i] == 0xFF)
                                 {
-                                    //数据处理流程
-                                    PreprocessRecvData(ReceiveBuf, gcnt);
+                                    ReceiveBuf[0] = Stateque.buffer[i];
+                                    gcnt = 1;
                                 }
-                                gcnt = 0;
+                            }
+                            else if (gcnt == 1)
+                            {
+                                if (Stateque.buffer[i] == 0xFF)
+                                {
+                                    ReceiveBuf[1] = Stateque.buffer[i];
+                                    gcnt = 2;
+                                }
+                                else
+                                {
+                                    gcnt = 0;
+                                    continue;
+                                }
                             }
                             else
                             {
-                                ReceiveBuf[gcnt++] = Stateque.buffer[i];
-                                if (gcnt > 1024)//帧长超过1024，直接return
+                                if (Stateque.buffer[i] == 0xFF)
                                 {
-                                    return;
+                                    ReceiveBuf[gcnt++] = Stateque.buffer[i];
+                                    if (gcnt > 3)
+                                    {
+                                        //数据处理流程
+                                        PreprocessRecvData(ReceiveBuf, gcnt);
+                                    }
+                                    gcnt = 0;
+                                }
+                                else
+                                {
+                                    ReceiveBuf[gcnt++] = Stateque.buffer[i];
+                                    if (gcnt > 1024)//帧长超过1024，直接return
+                                    {
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -1524,8 +1542,8 @@ namespace ETCF
             else
             {
                 CameraPicture.Reset();
-                CameraCanpost.Set();
-                if (CameraPicture.WaitOne(400))
+                //CameraCanpost.Set();
+                if (CameraPicture.WaitOne(1200))
                 {
                     match_flag = true;//匹配成功 
                     if (CameraType == "HK")
@@ -1783,8 +1801,9 @@ namespace ETCF
         {
             //JGTcpClient.Stop();
             //RSUTcpClient.Stop();
-            Application.Exit();
             Environment.Exit(0);
+            Application.Exit();
+            
             
         }
     }

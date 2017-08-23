@@ -9,16 +9,6 @@ using System.Windows.Forms;
 namespace ControlExs
 {
 
-    /****************************************************************
-    * 
-    *           Author：苦笑
-    *             Blog: http://www.cnblogs.com/Keep-Silence-/
-    *             Date: 2013-2-22
-    *
-    *****************************************************************/
-
-
-
     //按钮事件委托
     public delegate void MouseDownEventHandler();
 

@@ -101,6 +101,12 @@
             this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.OpenMohu = new ETCF.myButtonCheck();
+            this.OpenLocation = new ETCF.myButtonCheck();
+            this.OpenForce = new ETCF.myButtonCheck();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tbCamPassword = new System.Windows.Forms.TextBox();
@@ -144,12 +150,6 @@
             this.controltext = new System.Windows.Forms.TextBox();
             this.animator = new CCWin.SkinControl.SkinAnimator(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.OpenMohu = new ETCF.myButtonCheck();
-            this.OpenLocation = new ETCF.myButtonCheck();
-            this.OpenForce = new ETCF.myButtonCheck();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.qqGlassButton1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageButtonNext)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imageButtonplayAndPause)).BeginInit();
@@ -968,6 +968,72 @@
             this.tabPage4.Text = "基本配置信息";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // OpenMohu
+            // 
+            this.OpenMohu.BackColor = System.Drawing.Color.Transparent;
+            this.OpenMohu.Checked = true;
+            this.OpenMohu.CheckStyleX = ETCF.CheckStyle.style2;
+            this.OpenMohu.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.animator.SetDecoration(this.OpenMohu, CCWin.SkinControl.DecorationType.None);
+            this.OpenMohu.Location = new System.Drawing.Point(111, 63);
+            this.OpenMohu.Name = "OpenMohu";
+            this.OpenMohu.Size = new System.Drawing.Size(64, 24);
+            this.OpenMohu.TabIndex = 80;
+            // 
+            // OpenLocation
+            // 
+            this.OpenLocation.BackColor = System.Drawing.Color.Transparent;
+            this.OpenLocation.Checked = false;
+            this.OpenLocation.CheckStyleX = ETCF.CheckStyle.style2;
+            this.OpenLocation.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.animator.SetDecoration(this.OpenLocation, CCWin.SkinControl.DecorationType.None);
+            this.OpenLocation.Location = new System.Drawing.Point(110, 34);
+            this.OpenLocation.Name = "OpenLocation";
+            this.OpenLocation.Size = new System.Drawing.Size(64, 24);
+            this.OpenLocation.TabIndex = 79;
+            // 
+            // OpenForce
+            // 
+            this.OpenForce.BackColor = System.Drawing.Color.Transparent;
+            this.OpenForce.Checked = false;
+            this.OpenForce.CheckStyleX = ETCF.CheckStyle.style2;
+            this.OpenForce.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.animator.SetDecoration(this.OpenForce, CCWin.SkinControl.DecorationType.None);
+            this.OpenForce.Location = new System.Drawing.Point(110, 6);
+            this.OpenForce.Name = "OpenForce";
+            this.OpenForce.Size = new System.Drawing.Size(64, 24);
+            this.OpenForce.TabIndex = 78;
+            // 
+            // label25
+            // 
+            this.animator.SetDecoration(this.label25, CCWin.SkinControl.DecorationType.None);
+            this.label25.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label25.Location = new System.Drawing.Point(19, 67);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(106, 32);
+            this.label25.TabIndex = 77;
+            this.label25.Text = "模糊匹配：";
+            // 
+            // label24
+            // 
+            this.animator.SetDecoration(this.label24, CCWin.SkinControl.DecorationType.None);
+            this.label24.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label24.Location = new System.Drawing.Point(18, 36);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(107, 32);
+            this.label24.TabIndex = 76;
+            this.label24.Text = "位置匹配：";
+            // 
+            // label23
+            // 
+            this.animator.SetDecoration(this.label23, CCWin.SkinControl.DecorationType.None);
+            this.label23.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label23.Location = new System.Drawing.Point(19, 7);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(106, 32);
+            this.label23.TabIndex = 75;
+            this.label23.Text = "网络抓拍：";
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.groupBox6);
@@ -1452,72 +1518,6 @@
             // 
             this.timer1.Interval = 3000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // OpenMohu
-            // 
-            this.OpenMohu.BackColor = System.Drawing.Color.Transparent;
-            this.OpenMohu.Checked = true;
-            this.OpenMohu.CheckStyleX = ETCF.CheckStyle.style2;
-            this.OpenMohu.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.animator.SetDecoration(this.OpenMohu, CCWin.SkinControl.DecorationType.None);
-            this.OpenMohu.Location = new System.Drawing.Point(111, 63);
-            this.OpenMohu.Name = "OpenMohu";
-            this.OpenMohu.Size = new System.Drawing.Size(64, 24);
-            this.OpenMohu.TabIndex = 80;
-            // 
-            // OpenLocation
-            // 
-            this.OpenLocation.BackColor = System.Drawing.Color.Transparent;
-            this.OpenLocation.Checked = false;
-            this.OpenLocation.CheckStyleX = ETCF.CheckStyle.style2;
-            this.OpenLocation.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.animator.SetDecoration(this.OpenLocation, CCWin.SkinControl.DecorationType.None);
-            this.OpenLocation.Location = new System.Drawing.Point(110, 34);
-            this.OpenLocation.Name = "OpenLocation";
-            this.OpenLocation.Size = new System.Drawing.Size(64, 24);
-            this.OpenLocation.TabIndex = 79;
-            // 
-            // OpenForce
-            // 
-            this.OpenForce.BackColor = System.Drawing.Color.Transparent;
-            this.OpenForce.Checked = false;
-            this.OpenForce.CheckStyleX = ETCF.CheckStyle.style2;
-            this.OpenForce.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.animator.SetDecoration(this.OpenForce, CCWin.SkinControl.DecorationType.None);
-            this.OpenForce.Location = new System.Drawing.Point(110, 6);
-            this.OpenForce.Name = "OpenForce";
-            this.OpenForce.Size = new System.Drawing.Size(64, 24);
-            this.OpenForce.TabIndex = 78;
-            // 
-            // label25
-            // 
-            this.animator.SetDecoration(this.label25, CCWin.SkinControl.DecorationType.None);
-            this.label25.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label25.Location = new System.Drawing.Point(19, 67);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(106, 32);
-            this.label25.TabIndex = 77;
-            this.label25.Text = "模糊匹配：";
-            // 
-            // label24
-            // 
-            this.animator.SetDecoration(this.label24, CCWin.SkinControl.DecorationType.None);
-            this.label24.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label24.Location = new System.Drawing.Point(18, 36);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(107, 32);
-            this.label24.TabIndex = 76;
-            this.label24.Text = "位置匹配：";
-            // 
-            // label23
-            // 
-            this.animator.SetDecoration(this.label23, CCWin.SkinControl.DecorationType.None);
-            this.label23.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label23.Location = new System.Drawing.Point(19, 7);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(106, 32);
-            this.label23.TabIndex = 75;
-            this.label23.Text = "网络抓拍：";
             // 
             // FormDemo
             // 

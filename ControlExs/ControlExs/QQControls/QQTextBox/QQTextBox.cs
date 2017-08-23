@@ -9,15 +9,6 @@ using System.ComponentModel;
 
 namespace ControlExs
 {
-
-    /****************************************************************
-    * 
-    *           Author：苦笑
-    *             Blog: http://www.cnblogs.com/Keep-Silence-/
-    *             Date: 2013-2-22
-    *
-    *****************************************************************/
-
     /// <summary>
     /// 仿QQ效果的TextBox
     /// </summary>

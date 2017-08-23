@@ -520,10 +520,19 @@ namespace ETCF
             }
             private void Connect()
             {
-                client.Connect(ip);
-                nStream = new NetworkStream(client.Client, true);
-                sk = new Sockets(ip, client, nStream);
-                sk.nStream.BeginRead(sk.RecBuffer, 0, sk.RecBuffer.Length, new AsyncCallback(EndReader), sk);
+                try
+                {
+                    client.Connect(ip);
+                    nStream = new NetworkStream(client.Client, true);
+                    sk = new Sockets(ip, client, nStream);
+                    sk.nStream.BeginRead(sk.RecBuffer, 0, sk.RecBuffer.Length, new AsyncCallback(EndReader), sk);
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
+                
+                
             }
             private void EndReader(IAsyncResult ir)
             {
@@ -550,7 +559,14 @@ namespace ETCF
                     Sockets sks = s;
                     sks.ex = skex;
                     sks.ClientDispose = true;
-                    pushSockets.Invoke(sks);//推送至UI
+                    try
+                    {
+                        pushSockets.Invoke(sks);//推送至UI
+                    }
+                    catch
+                    { 
+                    
+                    }
 
                 }
 

@@ -401,7 +401,7 @@ namespace ETCF
             {
                 if (true == fc.WriteFileImage(dirpath, imagename, by, 0, iLen))
                 {
-                    MF.CameraCanpost.WaitOne(300);
+                    //MF.CameraCanpost.WaitOne(300);
                     MF.CameraPicture.Set();
                     ts = DateTime.Now - dtS;
                     Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机抓拍完成时间3：" + ts.TotalMilliseconds + "\r\n");
@@ -417,7 +417,7 @@ namespace ETCF
                 MF.AddOperLogCacheStr("保存车牌图片失败!");
                 return 1;
             }
-            MF.CameraCanpost.Reset();
+            //MF.CameraCanpost.Reset();
             return 0;
         }
 

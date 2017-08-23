@@ -6,16 +6,6 @@ using System.Windows.Forms;
 
 namespace ControlExs
 {
-
-    /****************************************************************
-    * 
-    *           Author：苦笑
-    *             Blog: http://www.cnblogs.com/Keep-Silence-/
-    *             Date: 2013-2-22
-    *
-    *****************************************************************/
-
-
     /// <summary>
     /// 拥有ToolTip属性的Form基类
     /// </summary>

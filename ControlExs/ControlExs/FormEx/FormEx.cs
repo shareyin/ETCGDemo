@@ -348,7 +348,14 @@ namespace ControlExs
             }
 
             //draw system buttons
-            SystemButtonManager.DrawSystemButtons(e.Graphics);
+            try
+            {
+                SystemButtonManager.DrawSystemButtons(e.Graphics);
+            }
+            catch
+            { 
+            
+            }
 
             //draw fringe
             RenderHelper.DrawFormFringe(this, e.Graphics, _formFringe, Radius);
