@@ -288,6 +288,7 @@ namespace ETCF
         }
         #endregion
         //窗口启动，加载配置文件，连接数据库，摄像机，天线，激光器
+        AutoSizeFormClass asc = new AutoSizeFormClass();
         private void FormDemo_Load(object sender, EventArgs e)
         {
             this.Left = (Screen.PrimaryScreen.WorkingArea.Width - Width) / 2;
@@ -370,6 +371,8 @@ namespace ETCF
             {
                 OpenLocation.Checked = false;
             }
+            asc.controllInitializeSize(this);//自适应屏幕
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;//最大化启动
             //维护线程
             ProtectPro();
             //数据接收线程
@@ -472,113 +475,66 @@ namespace ETCF
             {
                 this.Invoke(new ThreadStart(delegate
                 {
-                    int i = 0;
-                    if (index < 60)
-                        index = this.dataGridViewRoll.Rows.Add();
-                    //整体移动
-                    if (index != 0)//多条记录
+
+                    if (dataGridViewRoll.Rows.Count > 500)
                     {
-                        if (index > 80)
-                        {
-                            index = 80;
-                        }
-
-                        for (i = index; i > 0; i--)
-                        {
-                            //序号
-                            this.dataGridViewRoll.Rows[i].Cells[0].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[0].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[0].Style.ForeColor = Color.Black;
-                            //检测车型
-                            this.dataGridViewRoll.Rows[i].Cells[1].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[1].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[1].Style.ForeColor = Color.Green;
-                            //OBU车型
-                            this.dataGridViewRoll.Rows[i].Cells[2].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[2].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[2].Style.ForeColor = Color.Green;
-                            //交易时间
-                            this.dataGridViewRoll.Rows[i].Cells[3].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[3].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[3].Style.ForeColor = Color.Black;
-                            //抓拍时间
-                            this.dataGridViewRoll.Rows[i].Cells[4].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[4].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[4].Style.ForeColor = Color.Black;
-                            //OBU车牌
-                            this.dataGridViewRoll.Rows[i].Cells[5].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[5].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[5].Style.ForeColor = Color.Green;
-                            //检测车牌
-                            this.dataGridViewRoll.Rows[i].Cells[6].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[6].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[6].Style.ForeColor = Color.Green;
-                            //OBU车牌颜色
-                            this.dataGridViewRoll.Rows[i].Cells[7].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[7].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[7].Style.ForeColor = Color.Black;
-                            //检测车牌颜色
-                            this.dataGridViewRoll.Rows[i].Cells[8].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[8].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[8].Style.ForeColor = Color.Black;
-                            //识别车标
-                            this.dataGridViewRoll.Rows[i].Cells[9].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[9].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[9].Style.ForeColor = Color.Black;
-                            //激光序号
-                            this.dataGridViewRoll.Rows[i].Cells[10].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[10].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[10].Style.ForeColor = Color.Black;
-                            //车长
-                            this.dataGridViewRoll.Rows[i].Cells[11].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[11].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[11].Style.ForeColor = Color.Black;
-                            //车宽
-                            this.dataGridViewRoll.Rows[i].Cells[12].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[12].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[12].Style.ForeColor = Color.Black;
-                            //图片路劲
-                            this.dataGridViewRoll.Rows[i].Cells[13].Value = (this.dataGridViewRoll.Rows[i - 1].Cells[13].Value).ToString();
-                            this.dataGridViewRoll.Rows[i].Cells[13].Style.ForeColor = Color.Black;
-                        }
+                        dataGridViewRoll.Rows.Clear();
                     }
-
+                    //dataGridViewRoll.Rows.Add();
+                    int index = dataGridViewRoll.Rows.Add();
+                   
+                    
                     //序号
-                    this.dataGridViewRoll.Rows[0].Cells[0].Value = s_Id;
-                    this.dataGridViewRoll.Rows[0].Cells[0].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[0].Value = s_Id;
+                    this.dataGridViewRoll.Rows[index].Cells[0].Style.ForeColor = Color.Black;
                     //检测车型
-                    this.dataGridViewRoll.Rows[0].Cells[1].Value = s_JgCarType;
-                    this.dataGridViewRoll.Rows[0].Cells[1].Style.ForeColor = Color.Green;
+                    this.dataGridViewRoll.Rows[index].Cells[1].Value = s_JgCarType;
+                    this.dataGridViewRoll.Rows[index].Cells[1].Style.ForeColor = Color.Green;
                     //Obu车型
-                    this.dataGridViewRoll.Rows[0].Cells[2].Value = s_RsuCarType;
-                    this.dataGridViewRoll.Rows[0].Cells[2].Style.ForeColor = Color.Green;
+                    this.dataGridViewRoll.Rows[index].Cells[2].Value = s_RsuCarType;
+                    this.dataGridViewRoll.Rows[index].Cells[2].Style.ForeColor = Color.Green;
                     //交易时间
-                    this.dataGridViewRoll.Rows[0].Cells[3].Value = s_RsuTradeTime;
-                    this.dataGridViewRoll.Rows[0].Cells[3].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[3].Value = s_RsuTradeTime;
+                    this.dataGridViewRoll.Rows[index].Cells[3].Style.ForeColor = Color.Black;
                     //抓拍时间
-                    this.dataGridViewRoll.Rows[0].Cells[4].Value = s_JgTime;
-                    this.dataGridViewRoll.Rows[0].Cells[4].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[4].Value = s_JgTime;
+                    this.dataGridViewRoll.Rows[index].Cells[4].Style.ForeColor = Color.Black;
                     //OBU车牌
-                    this.dataGridViewRoll.Rows[0].Cells[5].Value = s_RsuPlateNum;
-                    this.dataGridViewRoll.Rows[0].Cells[5].Style.ForeColor = Color.Green;
+                    this.dataGridViewRoll.Rows[index].Cells[5].Value = s_RsuPlateNum;
+                    this.dataGridViewRoll.Rows[index].Cells[5].Style.ForeColor = Color.Green;
                     //识别车牌
-                    this.dataGridViewRoll.Rows[0].Cells[6].Value = s_CamPlateNum;
-                    this.dataGridViewRoll.Rows[0].Cells[6].Style.ForeColor = Color.Green;
+                    this.dataGridViewRoll.Rows[index].Cells[6].Value = s_CamPlateNum;
+                    this.dataGridViewRoll.Rows[index].Cells[6].Style.ForeColor = Color.Green;
                     //OBU车牌颜色
-                    this.dataGridViewRoll.Rows[0].Cells[7].Value = s_RsuPlateColor;
-                    this.dataGridViewRoll.Rows[0].Cells[7].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[7].Value = s_RsuPlateColor;
+                    this.dataGridViewRoll.Rows[index].Cells[7].Style.ForeColor = Color.Black;
                     //识别车牌颜色
-                    this.dataGridViewRoll.Rows[0].Cells[8].Value = s_CamPlateColor;
-                    this.dataGridViewRoll.Rows[0].Cells[8].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[8].Value = s_CamPlateColor;
+                    this.dataGridViewRoll.Rows[index].Cells[8].Style.ForeColor = Color.Black;
                     //识别车标
-                    this.dataGridViewRoll.Rows[0].Cells[9].Value = s_Cambiao;
-                    this.dataGridViewRoll.Rows[0].Cells[9].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[9].Value = s_Cambiao;
+                    this.dataGridViewRoll.Rows[index].Cells[9].Style.ForeColor = Color.Black;
                     //激光序号
-                    this.dataGridViewRoll.Rows[0].Cells[10].Value = s_JgId;
-                    this.dataGridViewRoll.Rows[0].Cells[10].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[10].Value = s_JgId;
+                    this.dataGridViewRoll.Rows[index].Cells[10].Style.ForeColor = Color.Black;
                     //车长
-                    this.dataGridViewRoll.Rows[0].Cells[11].Value = s_JgLength;
-                    this.dataGridViewRoll.Rows[0].Cells[11].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[11].Value = s_JgLength;
+                    this.dataGridViewRoll.Rows[index].Cells[11].Style.ForeColor = Color.Black;
                     //车宽
-                    this.dataGridViewRoll.Rows[0].Cells[12].Value = s_JgWide;
-                    this.dataGridViewRoll.Rows[0].Cells[12].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[12].Value = s_JgWide;
+                    this.dataGridViewRoll.Rows[index].Cells[12].Style.ForeColor = Color.Black;
                     //图片路劲
-                    this.dataGridViewRoll.Rows[0].Cells[13].Value = s_CamPicPath;
-                    this.dataGridViewRoll.Rows[0].Cells[13].Style.ForeColor = Color.Black;
+                    this.dataGridViewRoll.Rows[index].Cells[13].Value = s_CamPicPath;
+                    this.dataGridViewRoll.Rows[index].Cells[13].Style.ForeColor = Color.Black;
 
-                    this.dataGridViewRoll.FirstDisplayedScrollingRowIndex = 0;//显示最新一行
+                    this.dataGridViewRoll.FirstDisplayedScrollingRowIndex = dataGridView1.RowCount - 1;//显示最新一行
+                    
 
                 }));
             }
             catch (System.Exception ex)
             {
+                //MessageBox.Show(ex.ToString());
                 Console.WriteLine(ex.ToString());
             }
 
@@ -829,17 +785,42 @@ namespace ETCF
                 {
                     //MessageBox.Show(sks.ex.Message);
                     Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + sks.Ip + "Socket异常\r\n" + sks.ex.ToString() + "\r\n");
-                    
+                    string RSUIpPort = RSUip +":"+ RSUport;
+                    string JGIpPort = JGip + ":"+JGport;
+                    if (sks.Ip != null)
+                    {
+                        if (sks.Ip.ToString() == RSUIpPort)
+                        {
+                            RSUTcpClient.Stop();
+                            HeartRSUCount = 0;
+                            RSUConnect(RSUip, RSUport);
+                            Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + "天线Socket异常 " + "已自动恢复连接" + "\r\n");
+                        }
+                        else if (sks.Ip.ToString() == JGIpPort)
+                        {
+                            JGTcpClient.Stop();
+                            HeartJGCount = 0;
+                            JGConnect(JGip, JGport);
+                            Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + "激光Socket异常 " + "已自动恢复连接" + "\r\n");
+                        }
+                    }
+
                 }
                 else
                 {
                     StateObject Stateque = new StateObject();
+                    
+                    
                     if (sks.Offset == 0)
                     {
                         //do nothing
                     }
                     else
                     {
+                        if (sks.RecBuffer[3] == 0x81)
+                        {
+                            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + sks.Ip + "接收激光数据 " + "Offset长度：" + sks.Offset.ToString() + " resBuffer长度：" + sks.RecBuffer.Length.ToString() + "\r\n");
+                        }
                         Stateque.revLength = sks.Offset;
                         try
                         {
@@ -1136,6 +1117,7 @@ namespace ETCF
                     }
                     if (qJGData.TryDequeue(out qoutJG))
                     {
+                        Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "激光数据81帧出栈完成 " + "\r\n");
                         //入库
                         GlobalMember.SQLInter.InsertJGData(qoutJG.qJGLength, qoutJG.qJGWide, qoutJG.qJGCarType, 
                             qoutJG.qJGId, qoutJG.qCamPlateNum, qoutJG.qCamPicPath, qoutJG.qJGDateTime, 
@@ -1315,6 +1297,7 @@ namespace ETCF
                 case 0x81:
                     //激光数据
                     HeartJGCount = 0;
+                    Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "激光数据81帧解包完成 " + "\r\n");
                     TcpReply(0x18, JGTcpClient);
                     HanderJGData(p_pBuffer, p_nLen);
                     break;
@@ -1341,7 +1324,14 @@ namespace ETCF
                 case 0x82:
                     //通知摄像机即将抓拍
                     HeartJGCount = 0;
-                    HanderJGStartCam(p_pBuffer, p_nLen);
+                    try
+                    {
+                        HanderJGStartCam(p_pBuffer, p_nLen);
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "通知摄像机抓拍触发的异常 "+ex.ToString() + "\r\n");
+                    }
                     break;
                 default:
                     break;
@@ -1512,6 +1502,7 @@ namespace ETCF
                 +"车牌："+ m_qJG.qCamPlateNum +"车型"+m_qJG.qJGCarType+"车长："+m_qJG.qJGLength+"车高："
                 +m_qJG.qJGWide+"车标："+m_qJG.qCambiao+"激光ID"+m_qJG.qJGId+"随机码："+m_qJG.qJGRandCode.ToString("X2")+ "\r\n");
             //Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 激光入栈原始数据：" + ss + "\r\n");
+            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "激光数据81帧解析并入栈完成 " + "\r\n");
             lock (qJGData)
             {
                 qJGData.Enqueue(m_qJG);//放入激光的缓存中
@@ -1523,6 +1514,7 @@ namespace ETCF
         #region******通知摄像机抓拍******
         public void HanderJGStartCam(byte[] databuff, int bufflen)
         {
+
             int st = 2;
             QueueJGData m_qJG = new QueueJGData();
             bool match_flag = false;//匹配标识
@@ -1582,12 +1574,14 @@ namespace ETCF
                     }
                     else
                     {
+                        
                         if (HKCamera.GetPlateNo.Length > 3)
                         {
                             m_qJG.qCamPlateColor = HKCamera.GetPlateNo.Substring(0, 1);
                             m_qJG.qCamPlateNum = HKCamera.GetPlateNo;
                             m_qJG.qCambiao = HKCamera.GetVehicleLogoRecog;
                         }
+                       
                     }
                     m_qJG.qCamPicPath = HKCamera.imagepath;
                 }
@@ -1601,11 +1595,14 @@ namespace ETCF
                     }
                     else
                     {
-                        if (IPCCamera.GetPlateNo.Length > 3)
+                        if (IPCCamera.GetPlateNo != null)
                         {
-                            m_qJG.qCamPlateColor = IPCCamera.PlateColor;
-                            m_qJG.qCamPlateNum = IPCCamera.GetPlateNo;
-                            m_qJG.qCambiao = IPCCamera.GetVehicleLogoRecog;
+                            if (IPCCamera.GetPlateNo.Length > 3)
+                            {
+                                m_qJG.qCamPlateColor = IPCCamera.PlateColor;
+                                m_qJG.qCamPlateNum = IPCCamera.GetPlateNo;
+                                m_qJG.qCambiao = IPCCamera.GetVehicleLogoRecog;
+                            }
                         }
                     }
                     m_qJG.qCamPicPath = IPCCamera.imagepath;
@@ -1629,9 +1626,16 @@ namespace ETCF
                 + "车牌：" + m_qJG.qCamPlateNum + "车标：" + m_qJG.qCambiao + "激光ID" + m_qJG.qJGId + "\r\n");
             lock (listCamInfo)
             {
-                if (listCamInfo.Count >= 6)
+                if (listCamInfo.Count >= 3)
                 {
-                    listCamInfo.RemoveRange(0, 1);
+                    try
+                    {
+                        listCamInfo.RemoveRange(0, 1);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") +" 摄像机清栈异常"+ex.ToString()+ "\r\n");
+                    }
                 }
                 listCamInfo.Add(new CamList(m_qJG.qJGId, m_qJG.qCamPlateNum, m_qJG.qCamPlateColor,m_qJG.qCamPicPath,m_qJG.qCambiao));
             }
@@ -1750,11 +1754,11 @@ namespace ETCF
                 while (sdr.Read())
                 {
                     s_Id = sdr[0].ToString();
-                    s_RsuTradeTime = sdr[15].ToString();
+                    s_RsuTradeTime = sdr[17].ToString();
                     s_RsuPlateNum = sdr[11].ToString();
-                    s_RsuCarType = sdr[14].ToString();
+                    s_RsuCarType = sdr[16].ToString();
                     s_JgCarType = sdr[3].ToString();
-                    s_IsZuobi = sdr[16].ToString();
+                    s_IsZuobi = sdr[18].ToString();
                     s_JgLength = sdr[1].ToString();
                     s_JgWide = sdr[2].ToString();
                     s_CamPicPath = sdr[8].ToString();
@@ -1812,6 +1816,15 @@ namespace ETCF
             Application.Exit();
             
             
+        }
+
+        private void imageButtonNext_Click(object sender, EventArgs e)
+        {
+            Random rd = new Random();
+            adddataGridViewRoll("1", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff"), "2",
+                                           "3", rd.Next().ToString(), rd.Next(3).ToString(),
+                                           "1", "", "",
+                                           "", "","","","");
         }
     }
 }

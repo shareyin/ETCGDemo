@@ -323,29 +323,33 @@ namespace ControlExs
             e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
             //draw BackgroundImage
-            if (BackgroundImage != null)
+            try
             {
-                switch (BackgroundImageLayout)
+                if (BackgroundImage != null)
                 {
-                    case ImageLayout.Stretch:
-                    case ImageLayout.Zoom:
-                        e.Graphics.DrawImage(
-                            _formBkg,
-                            ClientRectangle,
-                            new Rectangle(0, 0, _formBkg.Width, _formBkg.Height),
-                            GraphicsUnit.Pixel);
-                        break;
-                    case ImageLayout.Center:
-                    case ImageLayout.None:
-                    case ImageLayout.Tile:
-                        e.Graphics.DrawImage(
-                            _formBkg,
-                            ClientRectangle,
-                            ClientRectangle,
-                            GraphicsUnit.Pixel);
-                        break;
+                    switch (BackgroundImageLayout)
+                    {
+                        case ImageLayout.Stretch:
+                        case ImageLayout.Zoom:
+                            e.Graphics.DrawImage(
+                                _formBkg,
+                                ClientRectangle,
+                                new Rectangle(0, 0, _formBkg.Width, _formBkg.Height),
+                                GraphicsUnit.Pixel);
+                            break;
+                        case ImageLayout.Center:
+                        case ImageLayout.None:
+                        case ImageLayout.Tile:
+                            e.Graphics.DrawImage(
+                                _formBkg,
+                                ClientRectangle,
+                                ClientRectangle,
+                                GraphicsUnit.Pixel);
+                            break;
+                    }
                 }
-            }
+            }catch(Exception)   
+            {}
 
             //draw system buttons
             try
@@ -377,25 +381,25 @@ namespace ControlExs
             { }
 
             //draw text
-            //if (Text.Length != 0)
-            //{
-            //    if (TextWithShadow)
-            //    {
-            //        using (Image textImg = RenderHelper.GetStringImgWithShadowEffect(Text, TextFont, TextForeColor, TextShadowColor, TextShadowWidth))
-            //        {
-            //            e.Graphics.DrawImage(textImg,TextRect.Location);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        TextRenderer.DrawText(
-            //        e.Graphics,
-            //        Text, TextFont,
-            //        TextRect,
-            //        TextForeColor,
-            //        TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
-            //    }
-            //}
+            if (Text.Length != 0)
+            {
+                if (TextWithShadow)
+                {
+                    using (Image textImg = RenderHelper.GetStringImgWithShadowEffect(Text, TextFont, TextForeColor, TextShadowColor, TextShadowWidth))
+                    {
+                        e.Graphics.DrawImage(textImg, TextRect.Location);
+                    }
+                }
+                else
+                {
+                    TextRenderer.DrawText(
+                    e.Graphics,
+                    Text, TextFont,
+                    TextRect,
+                    TextForeColor,
+                    TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis);
+                }
+            }
 
         }
 

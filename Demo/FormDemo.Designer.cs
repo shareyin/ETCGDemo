@@ -327,6 +327,7 @@
             this.imageButtonNext.TabIndex = 43;
             this.imageButtonNext.TabStop = false;
             this.imageButtonNext.ToolTipText = "下一首";
+            this.imageButtonNext.Click += new System.EventHandler(this.imageButtonNext_Click);
             // 
             // imageButtonplayAndPause
             // 

@@ -85,6 +85,10 @@ namespace ETCF
              //    nVehicleColor, nAlarmType, nVehicleType, nCapTime, index, "");//委托，用于显示识别数据(showCount)
              PlateColor = bstrColor;
              GetPlateNo = bstrNumber;
+             if (bstrNumber.Equals("无牌车"))
+             {
+                 GetPlateNo = "未检测";
+             }
              if (nPicLen > 0)//全景图数据长度不为0
              {
                  IntPtr ptr2 = (IntPtr)vPicData;
@@ -125,7 +129,7 @@ namespace ETCF
                  dt = DateTime.Parse("1970-01-01 08:00:00").AddSeconds(nCapTime);
              }
 
-             string strDir = ".\\plateimage\\" + @"\" + dt.ToString("yyyyMMdd");
+             string strDir = ".\\plateimage" + @"\" + dt.ToString("yyyyMMdd");
              if (!Directory.Exists(strDir))
              {
                  Directory.CreateDirectory(strDir);

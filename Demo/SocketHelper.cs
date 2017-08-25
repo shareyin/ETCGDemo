@@ -445,6 +445,7 @@ namespace ETCF
                 Port = port;
                 ip = new IPEndPoint(Ipaddress, Port);
                 client = new TcpClient();
+                client.NoDelay = true;
             }
             public void SendStrData(string SendData)
             {
@@ -522,9 +523,11 @@ namespace ETCF
             {
                 try
                 {
+                    client.NoDelay = true;
                     client.Connect(ip);
                     nStream = new NetworkStream(client.Client, true);
                     sk = new Sockets(ip, client, nStream);
+                    sk.Client.NoDelay = true;
                     sk.nStream.BeginRead(sk.RecBuffer, 0, sk.RecBuffer.Length, new AsyncCallback(EndReader), sk);
                 }
                 catch (Exception ex)
@@ -549,8 +552,10 @@ namespace ETCF
                             sk.nStream.Dispose();
                             return;
                         }
+                        
                         s.Offset = s.nStream.EndRead(ir);
                         pushSockets.Invoke(s);//推送至UI
+                        //s.nStream.BeginRead(s.RecBuffer, 0, s.RecBuffer.Length, new AsyncCallback(EndReader), s);
                         sk.nStream.BeginRead(sk.RecBuffer, 0, sk.RecBuffer.Length, new AsyncCallback(EndReader), sk);
                     }
                 }

@@ -71,11 +71,12 @@ E:\Program\ETCG武汉\修正\ControlExs\obj\x86\Debug\ControlExs.csproj.Generate
 E:\Program\ETCG武汉\修正\ControlExs\obj\x86\Debug\ControlExs.dll
 E:\Program\ETCG武汉\修正\ControlExs\obj\x86\Debug\ControlExs.pdb
 E:\Program\ETCG武汉\修正\ControlExs\obj\x86\Debug\ControlExs.csprojResolveAssemblyReference.cache
-E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\bin\Debug\ControlExs.dll
-E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\bin\Debug\ControlExs.pdb
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.FormEx.resources
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.QQMessageBox.resources
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.Properties.Resources.resources
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.csproj.GenerateResource.Cache
-E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.dll
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.pdb
+E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\bin\Debug\ControlExs.dll
+E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\bin\Debug\ControlExs.pdb
+E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.csprojResolveAssemblyReference.cache
+E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.dll
