@@ -372,7 +372,7 @@ namespace ETCF
                 OpenLocation.Checked = false;
             }
             asc.controllInitializeSize(this);//自适应屏幕
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;//最大化启动
+            //this.WindowState = System.Windows.Forms.FormWindowState.Maximized;//最大化启动
             //维护线程
             ProtectPro();
             //数据接收线程
@@ -383,6 +383,10 @@ namespace ETCF
             QueueHanderThread();
             //定时心跳
             timer1.Start();
+
+            //开启监控程序
+            StartProtect.StartPro();
+            
         }
 
         #region******线程维护部分******
@@ -1514,7 +1518,7 @@ namespace ETCF
         #region******通知摄像机抓拍******
         public void HanderJGStartCam(byte[] databuff, int bufflen)
         {
-
+            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  收到82帧摄像机抓拍命令"+ "\r\n");
             int st = 2;
             QueueJGData m_qJG = new QueueJGData();
             bool match_flag = false;//匹配标识
@@ -1540,10 +1544,12 @@ namespace ETCF
             }
             else
             {
+                Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  开始等待摄像机完成信号量" + "\r\n");
                 CameraPicture.Reset();
                 //CameraCanpost.Set();
                 if (CameraPicture.WaitOne(1200))
                 {
+                    Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  摄像机信号量已完成" + "\r\n");
                     match_flag = true;//匹配成功 
                     if (CameraType == "HK")
                     {
@@ -1556,6 +1562,7 @@ namespace ETCF
                 }
                 else
                 {
+                    Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  摄像机信号量已超时" + "\r\n");
                     match_flag = false;//匹配失败
                     m_qJG.qCamPicPath = "未知";
                 }
@@ -1578,7 +1585,7 @@ namespace ETCF
                         if (HKCamera.GetPlateNo.Length > 3)
                         {
                             m_qJG.qCamPlateColor = HKCamera.GetPlateNo.Substring(0, 1);
-                            m_qJG.qCamPlateNum = HKCamera.GetPlateNo;
+                            m_qJG.qCamPlateNum = HKCamera.GetPlateNo.Substring(1);
                             m_qJG.qCambiao = HKCamera.GetVehicleLogoRecog;
                         }
                        
@@ -1626,7 +1633,7 @@ namespace ETCF
                 + "车牌：" + m_qJG.qCamPlateNum + "车标：" + m_qJG.qCambiao + "激光ID" + m_qJG.qJGId + "\r\n");
             lock (listCamInfo)
             {
-                if (listCamInfo.Count >= 3)
+                if (listCamInfo.Count >= 5)
                 {
                     try
                     {

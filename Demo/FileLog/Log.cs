@@ -19,11 +19,11 @@ namespace ETCF
                 catch { }
             }
         }
-        public static void MainmessageLog(string Msg)
+        public static void MainStartLog(string Msg)
         {
-            string sDirPath = ".\\MainMessageLog\\";
+            string sDirPath = ".\\MainStartLog\\";
             CreateDir(sDirPath);
-            string sFilePath = sDirPath +DateTime.Now.ToString("yyyy-MM-dd")+ "MainMessage.log.ini";
+            string sFilePath = sDirPath + DateTime.Now.ToString("yyyy-MM-dd") + "MainStart.log.ini";
             StreamWriter sw = null;
             try
             {
@@ -31,7 +31,7 @@ namespace ETCF
                 {
                     sw.WriteLine(Msg);
                     sw.Flush();
-                    
+
                 }
             }
             catch { }

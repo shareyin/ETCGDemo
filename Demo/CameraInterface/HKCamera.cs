@@ -376,7 +376,7 @@ namespace ETCF
                         break;
                 }
                 GetPlateNo = struITSPlateResult.struPlateInfo.sLicense;
-                GetPlateNo=GetPlateNo.Substring(1);
+                
             }
             GetVehicleLogoRecog = "";
             GetVehicleLogoRecog = CHCNetSDK.VLR_VEHICLE_CLASS[struITSPlateResult.struVehicleInfo.byVehicleLogoRecog];

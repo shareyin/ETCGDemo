@@ -348,8 +348,9 @@ namespace ControlExs
                             break;
                     }
                 }
-            }catch(Exception)   
-            {}
+            }
+            catch (Exception)
+            { }
 
             //draw system buttons
             try
@@ -357,8 +358,8 @@ namespace ControlExs
                 SystemButtonManager.DrawSystemButtons(e.Graphics);
             }
             catch
-            { 
-            
+            {
+
             }
 
             //draw fringe
