@@ -532,6 +532,7 @@ namespace ETCF
                 }
                 catch (Exception ex)
                 {
+                    Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " Socket建立连接异常 " + ip.ToString() + "\r\n" + ex.ToString() + "\r\n");
                     return;
                 }
                 
@@ -568,9 +569,9 @@ namespace ETCF
                     {
                         pushSockets.Invoke(sks);//推送至UI
                     }
-                    catch
-                    { 
-                    
+                    catch(Exception ex)
+                    {
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " Socket推送UI异常 " + sks.Ip.ToString() + "\r\n" + ex.ToString() + "\r\n");
                     }
 
                 }

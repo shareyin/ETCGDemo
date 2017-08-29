@@ -378,6 +378,7 @@ namespace ETCF
                 GetPlateNo = struITSPlateResult.struPlateInfo.sLicense;
                 
             }
+            MF.AddOperLogCacheStr("车牌： " + GetPlateNo);
             GetVehicleLogoRecog = "";
             GetVehicleLogoRecog = CHCNetSDK.VLR_VEHICLE_CLASS[struITSPlateResult.struVehicleInfo.byVehicleLogoRecog];
             FlieClass fc = new FlieClass();

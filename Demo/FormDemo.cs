@@ -821,9 +821,9 @@ namespace ETCF
                     }
                     else
                     {
-                        if (sks.RecBuffer[3] == 0x81)
+                        if (sks.RecBuffer[3] != 0xD9 && sks.RecBuffer[3] != 0x9D)
                         {
-                            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + sks.Ip + "接收激光数据 " + "Offset长度：" + sks.Offset.ToString() + " resBuffer长度：" + sks.RecBuffer.Length.ToString() + "\r\n");
+                            Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " " + sks.Ip + " 接收数据帧命令:" + sks.RecBuffer[3].ToString("X2") + " Offset长度：" + sks.Offset.ToString() + "\r\n");
                         }
                         Stateque.revLength = sks.Offset;
                         try
@@ -838,8 +838,7 @@ namespace ETCF
                         {
                             queue.Enqueue(Stateque);
                         }
-                    }
-                    //HanderOrgData(sks.RecBuffer, sks.Offset);                  
+                    }                
                 }
 
             }
@@ -928,7 +927,7 @@ namespace ETCF
             while (true)
             {
                 StateObject Stateque = new StateObject();
-                lock (queue)
+                lock (Locker2)
                 {
                     if (queue.TryDequeue(out Stateque))
                     {
@@ -984,7 +983,7 @@ namespace ETCF
                         }
                     }
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(10);
             }
         }
         //处理数据缓存的线程函数
