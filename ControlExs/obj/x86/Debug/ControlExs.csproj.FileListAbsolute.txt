@@ -78,5 +78,4 @@ E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\Contr
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.pdb
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\bin\Debug\ControlExs.dll
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\bin\Debug\ControlExs.pdb
-E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.csprojResolveAssemblyReference.cache
 E:\Program\ETCG武汉\修正（心跳）\ETCGDemo\ControlExs\obj\x86\Debug\ControlExs.dll

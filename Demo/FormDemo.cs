@@ -167,7 +167,7 @@ namespace ETCF
         private string HKCameraUsername;
         private string HKCameraPassword;
 
-        private string IPCCameraip;
+        private string ComCameraip;
         //摄像机相关参数
         
         //private Int32 m_lUserID = -1;
@@ -222,8 +222,8 @@ namespace ETCF
             GetPrivateProfileString("HKCameraconfig", "Password", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
             HKCameraPassword = temp.ToString();
 
-            GetPrivateProfileString("IPCCameraconfig", "CameIP", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
-            IPCCameraip = temp.ToString();
+            GetPrivateProfileString("ComCameraconfig", "CameIP", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
+            ComCameraip = temp.ToString();
 
             GetPrivateProfileString("SoftFunction", "CameraType", "异常", temp, 255, AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "config.ini");
             CameraType = temp.ToString();
@@ -342,7 +342,12 @@ namespace ETCF
                 else if (CameraType == "IPC")
                 {
                     GlobalMember.IPCCameraInter = new IPCCamera(this);
-                    GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                    GlobalMember.IPCCameraInter.initIPC(ComCameraip);
+                }
+                else if (CameraType == "IPNC")
+                {
+                    GlobalMember.IPNCCameraInter = new IPNCCamera(this);
+                    GlobalMember.IPNCCameraInter.initCamera(ComCameraip);
                 }
                 
                
@@ -424,7 +429,22 @@ namespace ETCF
                     {
                         pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
                         GlobalMember.IPCCameraInter = new IPCCamera(this);
-                        GlobalMember.IPCCameraInter.initIPC(IPCCameraip);
+                        GlobalMember.IPCCameraInter.initIPC(ComCameraip);
+                        Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机已检测断开，正在重连\r\n");
+                    }
+                    else
+                    {
+                        pictureBoxCam.BackgroundImage = Image.FromFile(@GreenicoPath);
+                    }
+                }
+                else if (CameraType == "IPNC")
+                {
+                    //摄像头重连
+                    if (IPNCCamera.IPNCConnState == false)
+                    {
+                        pictureBoxCam.BackgroundImage = Image.FromFile(@RedicoPath);
+                        GlobalMember.IPNCCameraInter = new IPNCCamera(this);
+                        GlobalMember.IPNCCameraInter.initCamera(ComCameraip);
                         Log.WriteLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机已检测断开，正在重连\r\n");
                     }
                     else
@@ -1558,6 +1578,10 @@ namespace ETCF
                     {
                         m_qJG.qCamPicPath = IPCCamera.imagepath;
                     }
+                    else if (CameraType == "IPNC")
+                    {
+                        m_qJG.qCamPicPath = IPNCCamera.imagepath;
+                    }
                 }
                 else
                 {
@@ -1593,7 +1617,7 @@ namespace ETCF
                 }
                 else if (CameraType == "IPC")
                 {
-                    if (IPCCamera.GetPlateNo == "未检测")
+                    if (IPCCamera.GetPlateNo == "未检测" || IPNCCamera.GetPlateNo == "无车牌")
                     {
                         m_qJG.qCamPlateColor = "未检测";
                         m_qJG.qCamPlateNum = IPCCamera.GetPlateNo;
@@ -1612,6 +1636,28 @@ namespace ETCF
                         }
                     }
                     m_qJG.qCamPicPath = IPCCamera.imagepath;
+                }
+                else if (CameraType == "IPNC")
+                {
+                    if (IPNCCamera.GetPlateNo == "未检测" || IPNCCamera.GetPlateNo == "无车牌")
+                    {
+                        m_qJG.qCamPlateColor = "未检测";
+                        m_qJG.qCamPlateNum = IPNCCamera.GetPlateNo;
+                        m_qJG.qCambiao = "未知";
+                    }
+                    else
+                    {
+                        if (IPNCCamera.GetPlateNo != null)
+                        {
+                            if (IPNCCamera.GetPlateNo.Length > 3)
+                            {
+                                m_qJG.qCamPlateColor = IPNCCamera.PlateColor;
+                                m_qJG.qCamPlateNum = IPNCCamera.GetPlateNo;
+                                m_qJG.qCambiao = IPNCCamera.GetVehicleLogoRecog;
+                            }
+                        }
+                    }
+                    m_qJG.qCamPicPath = IPNCCamera.imagepath;
                 }
             }
             else
