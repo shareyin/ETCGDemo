@@ -70,6 +70,7 @@ namespace ETCF
         {
             try
             {
+                MF.CameraCanpost.WaitOne(1000);
                 MF.AddOperLogCacheStr("摄像机进入回调");
                 FlieClass fc = new FlieClass();
                 byte[] VehImage = new byte[len];
@@ -104,7 +105,7 @@ namespace ETCF
                 dirpath += "月\\";
                 dirpath += DateTime.Now.Day.ToString();
                 dirpath += "日\\";
-                imagepath=dirpath;
+                imagepath = dirpath + imagename;
                 //string imagepath = dirpath + imagename + "车型" + vehtype.ToString();
                 if (true == fc.WriteFileImage(dirpath, imagename, VehImage, 0, len))
                 {

@@ -1565,7 +1565,7 @@ namespace ETCF
             {
                 Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  开始等待摄像机完成信号量" + "\r\n");
                 CameraPicture.Reset();
-                //CameraCanpost.Set();
+                CameraCanpost.Set();
                 if (CameraPicture.WaitOne(1200))
                 {
                     Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + "  摄像机信号量已完成" + "\r\n");
@@ -1589,6 +1589,7 @@ namespace ETCF
                     match_flag = false;//匹配失败
                     m_qJG.qCamPicPath = "未知";
                 }
+                CameraCanpost.Reset();
             }
             
             

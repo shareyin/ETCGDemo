@@ -53,6 +53,7 @@ namespace ETCF
               IntPtr vCloseUpPicData, UInt32 nCloseUpPicLen, short nSpeed, short nVehicleType, short nReserved1, short nReserved2, Single fPlateConfidence,
               UInt32 nVehicleColor, UInt32 nPlateType, UInt32 nVehicleDir, UInt32 nAlarmType, UInt32 nCapTime, Int32 index, uint u32ResultHigh, uint u32ResultLow)
          {
+             MF.CameraCanpost.WaitOne(1000);
 
 #if VERSION32
             IntPtr vdcPtr = (IntPtr)u32ResultLow;

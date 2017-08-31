@@ -334,7 +334,7 @@ namespace ETCF
 
         public uint ProcessCommAlarm_ITSPlate(ref CHCNetSDK.NET_DVR_ALARMER pAlarmer, IntPtr pAlarmInfo, uint dwBufLen, IntPtr pUser)
         {
-            
+            MF.CameraCanpost.WaitOne(1000);
             DateTime dtS = DateTime.Now;
             CHCNetSDK.NET_ITS_PLATE_RESULT struITSPlateResult = new CHCNetSDK.NET_ITS_PLATE_RESULT();
             uint dwSize = (uint)Marshal.SizeOf(struITSPlateResult);
