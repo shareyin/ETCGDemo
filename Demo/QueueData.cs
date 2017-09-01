@@ -84,7 +84,7 @@ namespace ETCF
 
         public CarFullInfo(string s_OBUPlateNum, string s_OBUcarType, string s_RSURandCode,
             string s_OBUDateTime, string s_OBUCarLength, string s_OBUCarHigh,string s_OBUY,string s_OBUBiao,
-            string s_OBUPlateColor, string s_OBUMac, string s_JGCarType,
+            string s_OBUPlateColor, string s_OBUMac,string s_JGCarType,
             string s_JGCarHigh, string s_JGCarLength, string s_JGDateTime,
             string s_JGId, string s_CamPlateNum, string s_CamPlateColor,
             string s_CamBiao, string s_CamPicPath,string s_JGRandCode,string s_Count)

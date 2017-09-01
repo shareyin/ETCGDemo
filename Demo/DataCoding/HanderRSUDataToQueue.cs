@@ -48,7 +48,7 @@ namespace ETCF
             m_qRSU.qOBUBiao = "";
             for (int i = 0; i < 16; i++)
             {
-                m_qRSU.qOBUBiao += databuff[40 + i].ToString("X2");
+                m_qRSU.qOBUBiao += databuff[39 + i].ToString("X2");
 
             }
             m_qRSU.qOBUBiao = Encoding.GetEncoding("GB2312").GetString(HexStringToByteArray(m_qRSU.qOBUBiao));

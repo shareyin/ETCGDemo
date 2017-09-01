@@ -159,7 +159,7 @@ namespace ETCF
             }
         }
         //插入RSU数据
-        public bool InsertRSUData(string s_OBUPlateColor, string s_OBUPlateNum, string s_OBUMac, string s_OBUY, string s_OBUCarLength, string s_OBUCarHigh, string s_OBUCarType, string s_TradeTime, string s_RandCode)
+        public bool InsertRSUData(string s_OBUPlateColor, string s_OBUPlateNum, string s_OBUMac, string s_OBUY, string s_OBUBiao,string s_OBUCarLength, string s_OBUCarHigh, string s_OBUCarType, string s_TradeTime, string s_RandCode)
         {
             string InsertString = @"Insert into " + sql_dbname + ".dbo.OBUInfo(OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,RandCode) values('" + s_OBUPlateColor + "','" + s_OBUPlateNum + "','" + s_OBUMac + "','" + s_OBUY + "','" + s_OBUCarLength + "','" + s_OBUCarHigh + "','" + s_OBUCarType + "','" + s_TradeTime + "','" + s_RandCode + "')";
             try

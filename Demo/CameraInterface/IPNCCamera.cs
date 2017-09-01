@@ -88,6 +88,10 @@ namespace ETCF
                 {
                     sPlate = "无车牌";
                 }
+                if (sPlate == "")
+                {
+                    sPlate = "无牌车";
+                }
                 byte[] l_PlateBrand = new byte[12];
                 Marshal.Copy(PlateBrand, l_PlateBrand, 0, 12);
                 sPlateBrand = Encoding.Default.GetString(l_PlateBrand);

@@ -1037,7 +1037,7 @@ namespace ETCF
                     {
                         //先进行RSU数据存储
                         isInRSUSql = GlobalMember.SQLInter.InsertRSUData(qoutRSU.qOBUPlateColor, qoutRSU.qOBUPlateNum, 
-                            qoutRSU.qOBUMac, qoutRSU.qOBUY, qoutRSU.qOBUCarLength, qoutRSU.qOBUCarhigh, 
+                            qoutRSU.qOBUMac, qoutRSU.qOBUY,qoutRSU.qOBUBiao, qoutRSU.qOBUCarLength, qoutRSU.qOBUCarhigh, 
                             qoutRSU.qOBUCarType, qoutRSU.qOBUDateTime, qoutRSU.qRSURandCode.ToString("X2"));
                         if (!isInRSUSql)
                         {
@@ -1080,6 +1080,7 @@ namespace ETCF
                                 listAllCarInfo[i].sOBUPlateColor = qoutRSU.qOBUPlateColor;
                                 listAllCarInfo[i].sOBUPlateNum = qoutRSU.qOBUPlateNum;
                                 listAllCarInfo[i].sOBUY = qoutRSU.qOBUY;
+                                listAllCarInfo[i].sOBUBiao = qoutRSU.qOBUBiao;
                                 listAllCarInfo[i].sRSURandCode = qoutRSU.qRSURandCode.ToString("X2");
                                 listAllCarInfo[i].sCount = qoutRSU.qCount;
                                 isMarch = true;
@@ -1093,12 +1094,12 @@ namespace ETCF
                                 //更新数据库
                                 //写入总数据库
                                 InsertString = @"Insert into " + sql_dbname
-                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
+                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUBiao,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
                                     + listAllCarInfo[i].sJGCarLength + "','" + listAllCarInfo[i].sJGCarHigh + "','" + listAllCarInfo[i].sJGCarType + "','"
                                     + listAllCarInfo[i].sJGDateTime + "','" + listAllCarInfo[i].sCamPlateColor + "','" + listAllCarInfo[i].sCamPlateNum + "','"
                                     + listAllCarInfo[i].sCamBiao + "','" + listAllCarInfo[i].sCamPicPath + "','" + listAllCarInfo[i].sJGId + "','"
                                     + listAllCarInfo[i].sOBUPlateColor + "','" + listAllCarInfo[i].sOBUPlateNum + "','" + listAllCarInfo[i].sOBUMac + "','"
-                                    + listAllCarInfo[i].sOBUY + "','" + listAllCarInfo[i].sOBUCarLength + "','" + listAllCarInfo[i].sOBUCarHigh + "','"
+                                    + listAllCarInfo[i].sOBUY + "','" + listAllCarInfo[i].sOBUBiao + "','" + listAllCarInfo[i].sOBUCarLength + "','" + listAllCarInfo[i].sOBUCarHigh + "','"
                                     + listAllCarInfo[i].sOBUCartype + "','" + listAllCarInfo[i].sOBUDateTime + "','" + sZuobistring + "','"
                                     + listAllCarInfo[i].sRSURandCode + "','" + "车牌匹配" + "')";
                                 GlobalMember.SQLInter.UpdateSQLData(InsertString);
@@ -1114,12 +1115,12 @@ namespace ETCF
                             {
                                 //写入总数据库
                                 InsertString = @"Insert into " + sql_dbname
-                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
+                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUBiao,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
                                     + listAllCarInfo[0].sJGCarLength + "','" + listAllCarInfo[0].sJGCarHigh + "','" + listAllCarInfo[0].sJGCarType + "','"
                                     + listAllCarInfo[0].sJGDateTime + "','" + listAllCarInfo[0].sCamPlateColor + "','" + listAllCarInfo[0].sCamPlateNum + "','"
                                     + listAllCarInfo[0].sCamBiao + "','" + listAllCarInfo[0].sCamPicPath + "','" + listAllCarInfo[0].sJGId + "','"
                                     + listAllCarInfo[0].sOBUPlateColor + "','" + listAllCarInfo[0].sOBUPlateNum + "','" + listAllCarInfo[0].sOBUMac + "','"
-                                    + listAllCarInfo[0].sOBUY + "','" + listAllCarInfo[0].sOBUCarLength + "','" + listAllCarInfo[0].sOBUCarHigh + "','"
+                                    + listAllCarInfo[0].sOBUY + "','" + listAllCarInfo[0].sOBUBiao + "','" + listAllCarInfo[0].sOBUCarLength + "','" + listAllCarInfo[0].sOBUCarHigh + "','"
                                     + listAllCarInfo[0].sOBUCartype + "','" + listAllCarInfo[0].sOBUDateTime + "','" + "未知" + "','"
                                     + listAllCarInfo[0].sRSURandCode + "','" + "未能匹配" + "')";
                                 GlobalMember.SQLInter.UpdateSQLData(InsertString);
@@ -1189,12 +1190,12 @@ namespace ETCF
                                     listAllCarInfo[i].sCamBiao, listAllCarInfo[i].sJGId, listAllCarInfo[i].sOBUCarLength, listAllCarInfo[i].sOBUCarHigh, listAllCarInfo[i].sCamPicPath);
                                 //写入总数据库
                                 InsertString = @"Insert into " + sql_dbname
-                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
+                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUBiao,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
                                     + listAllCarInfo[i].sJGCarLength + "','" + listAllCarInfo[i].sJGCarHigh + "','" + listAllCarInfo[i].sJGCarType + "','"
                                     + listAllCarInfo[i].sJGDateTime + "','" + listAllCarInfo[i].sCamPlateColor + "','" + listAllCarInfo[i].sCamPlateNum + "','"
                                     + listAllCarInfo[i].sCamBiao + "','" + listAllCarInfo[i].sCamPicPath + "','" + listAllCarInfo[i].sJGId + "','"
                                     + listAllCarInfo[i].sOBUPlateColor + "','" + listAllCarInfo[i].sOBUPlateNum + "','" + listAllCarInfo[i].sOBUMac + "','"
-                                    + listAllCarInfo[i].sOBUY + "','" + listAllCarInfo[i].sOBUCarLength + "','" + listAllCarInfo[i].sOBUCarHigh + "','"
+                                    + listAllCarInfo[i].sOBUY + "','" + listAllCarInfo[i].sOBUBiao + "','" + listAllCarInfo[i].sOBUCarLength + "','" + listAllCarInfo[i].sOBUCarHigh + "','"
                                     + listAllCarInfo[i].sOBUCartype + "','" + listAllCarInfo[i].sOBUDateTime + "','" + sZuobistring + "','"
                                     + listAllCarInfo[i].sRSURandCode + "','" + MarchFunction + "')";
                                 GlobalMember.SQLInter.UpdateSQLData(InsertString);
@@ -1216,12 +1217,12 @@ namespace ETCF
                                         //更新数据库
                                         //写入总数据库
                                         InsertString = @"Insert into " + sql_dbname
-                                            + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
+                                            + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUBiao,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
                                             + listAllCarInfo[i-1].sJGCarLength + "','" + listAllCarInfo[i-1].sJGCarHigh + "','" + listAllCarInfo[i-1].sJGCarType + "','"
                                             + listAllCarInfo[i-1].sJGDateTime + "','" + listAllCarInfo[i-1].sCamPlateColor + "','" + listAllCarInfo[i-1].sCamPlateNum + "','"
                                             + listAllCarInfo[i-1].sCamBiao + "','" + listAllCarInfo[i-1].sCamPicPath + "','" + listAllCarInfo[i-1].sJGId + "','"
                                             + listAllCarInfo[i-2].sOBUPlateColor + "','" + listAllCarInfo[i-2].sOBUPlateNum + "','" + listAllCarInfo[i-2].sOBUMac + "','"
-                                            + listAllCarInfo[i-2].sOBUY + "','" + listAllCarInfo[i-2].sOBUCarLength + "','" + listAllCarInfo[i-2].sOBUCarHigh + "','"
+                                            + listAllCarInfo[i - 2].sOBUY + "','" + listAllCarInfo[i-2].sOBUBiao + "','" + listAllCarInfo[i - 2].sOBUCarLength + "','" + listAllCarInfo[i - 2].sOBUCarHigh + "','"
                                             + listAllCarInfo[i-2].sOBUCartype + "','" + listAllCarInfo[i-2].sOBUDateTime + "','" + "强制匹配作弊不详" + "','"
                                             + listAllCarInfo[i-2].sRSURandCode + "','" + "强制匹配" + "')";
                                         GlobalMember.SQLInter.UpdateSQLData(InsertString);
@@ -1241,12 +1242,12 @@ namespace ETCF
                             {
                                 //写入总数据库
                                 InsertString = @"Insert into " + sql_dbname
-                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
+                                    + ".dbo.CarInfo(JGLength,JGWide,JGCarType,ForceTime,CamPlateColor,CamPlateNum,Cambiao,CamPicPath,JGId,OBUPlateColor,OBUPlateNum,OBUMac,OBUY,OBUBiao,OBUCarLength,OBUCarHigh,OBUCarType,TradeTime,TradeState,RandCode,GetFunction) values('"
                                     + listAllCarInfo[0].sJGCarLength + "','" + listAllCarInfo[0].sJGCarHigh + "','" + listAllCarInfo[0].sJGCarType + "','"
                                     + listAllCarInfo[0].sJGDateTime + "','" + listAllCarInfo[0].sCamPlateColor + "','" + listAllCarInfo[0].sCamPlateNum + "','"
                                     + listAllCarInfo[0].sCamBiao + "','" + listAllCarInfo[0].sCamPicPath + "','" + listAllCarInfo[0].sJGId + "','"
                                     + listAllCarInfo[0].sOBUPlateColor + "','" + listAllCarInfo[0].sOBUPlateNum + "','" + listAllCarInfo[0].sOBUMac + "','"
-                                    + listAllCarInfo[0].sOBUY + "','" + listAllCarInfo[0].sOBUCarLength + "','" + listAllCarInfo[0].sOBUCarHigh + "','"
+                                    + listAllCarInfo[0].sOBUY + "','" + listAllCarInfo[0].sOBUBiao + "','" + listAllCarInfo[0].sOBUCarLength + "','" + listAllCarInfo[0].sOBUCarHigh + "','"
                                     + listAllCarInfo[0].sOBUCartype + "','" + listAllCarInfo[0].sOBUDateTime + "','" + "未知" + "','"
                                     + listAllCarInfo[0].sRSURandCode + "','" + "未能匹配" + "')";
                                 GlobalMember.SQLInter.UpdateSQLData(InsertString);
@@ -1597,31 +1598,43 @@ namespace ETCF
             {
                 if (CameraType == "HK")
                 {
-                    if (HKCamera.GetPlateNo == "未检测")
+                    if (HKCamera.GetPlateNo == "未检测" || HKCamera.GetPlateNo == "无车牌")
                     {
                         m_qJG.qCamPlateColor = "未检测";
                         m_qJG.qCamPlateNum = HKCamera.GetPlateNo;
                         m_qJG.qCambiao = "未知";
                     }
+                    else if (HKCamera.GetPlateNo == "" || HKCamera.GetPlateNo == "无牌车")
+                    {
+                        m_qJG.qCamPlateColor = "无牌车";
+                        m_qJG.qCamPlateNum = "无牌车";
+                        m_qJG.qCambiao = HKCamera.GetVehicleLogoRecog;
+                    }
                     else
                     {
-                        
+
                         if (HKCamera.GetPlateNo.Length > 3)
                         {
                             m_qJG.qCamPlateColor = HKCamera.GetPlateNo.Substring(0, 1);
                             m_qJG.qCamPlateNum = HKCamera.GetPlateNo.Substring(1);
                             m_qJG.qCambiao = HKCamera.GetVehicleLogoRecog;
                         }
-                       
+
                     }
                     m_qJG.qCamPicPath = HKCamera.imagepath;
                 }
                 else if (CameraType == "IPC")
                 {
-                    if (IPCCamera.GetPlateNo == "未检测" || IPNCCamera.GetPlateNo == "无车牌")
+                    if (IPCCamera.GetPlateNo == "未检测" || IPCCamera.GetPlateNo == "无车牌")
                     {
                         m_qJG.qCamPlateColor = "未检测";
                         m_qJG.qCamPlateNum = IPCCamera.GetPlateNo;
+                        m_qJG.qCambiao = "未知";
+                    }
+                    else if (IPCCamera.GetPlateNo == "" || IPCCamera.GetPlateNo == "无牌车")
+                    {
+                        m_qJG.qCamPlateColor = "无牌车";
+                        m_qJG.qCamPlateNum = "无牌车";
                         m_qJG.qCambiao = "未知";
                     }
                     else
@@ -1644,6 +1657,12 @@ namespace ETCF
                     {
                         m_qJG.qCamPlateColor = "未检测";
                         m_qJG.qCamPlateNum = IPNCCamera.GetPlateNo;
+                        m_qJG.qCambiao = "未知";
+                    }
+                    else if (IPNCCamera.GetPlateNo == "" || IPNCCamera.GetPlateNo == "无牌车")
+                    {
+                        m_qJG.qCamPlateColor = "无牌车";
+                        m_qJG.qCamPlateNum = "无牌车";
                         m_qJG.qCambiao = "未知";
                     }
                     else

@@ -86,9 +86,9 @@ namespace ETCF
              //    nVehicleColor, nAlarmType, nVehicleType, nCapTime, index, "");//委托，用于显示识别数据(showCount)
              PlateColor = bstrColor;
              GetPlateNo = bstrNumber;
-             if (bstrNumber.Equals("无牌车"))
+             if (bstrNumber.Equals(""))
              {
-                 GetPlateNo = "未检测";
+                 GetPlateNo = "无牌车";
              }
              if (nPicLen > 0)//全景图数据长度不为0
              {

@@ -334,13 +334,14 @@ namespace ETCF
 
         public uint ProcessCommAlarm_ITSPlate(ref CHCNetSDK.NET_DVR_ALARMER pAlarmer, IntPtr pAlarmInfo, uint dwBufLen, IntPtr pUser)
         {
-            MF.CameraCanpost.WaitOne(1000);
+            
             DateTime dtS = DateTime.Now;
             CHCNetSDK.NET_ITS_PLATE_RESULT struITSPlateResult = new CHCNetSDK.NET_ITS_PLATE_RESULT();
             uint dwSize = (uint)Marshal.SizeOf(struITSPlateResult);
             struITSPlateResult = (CHCNetSDK.NET_ITS_PLATE_RESULT)Marshal.PtrToStructure(pAlarmInfo, typeof(CHCNetSDK.NET_ITS_PLATE_RESULT));
             TimeSpan ts = DateTime.Now - dtS;
             Log.WritePlateLog(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff") + " 摄像机抓拍完成时间1：" + ts.TotalMilliseconds + "\r\n");
+            MF.CameraCanpost.WaitOne(1000);
             MF.AddOperLogCacheStr("进入报警布防回调函数,图片" + struITSPlateResult.dwPicNum.ToString() + "张..");
             string res = "成功";
             int iLen = (int)struITSPlateResult.struPicInfo[0].dwDataLen;
@@ -377,6 +378,10 @@ namespace ETCF
                 }
                 GetPlateNo = struITSPlateResult.struPlateInfo.sLicense;
                 
+            }
+            if (GetPlateNo.Equals(""))
+            {
+                GetPlateNo = "无牌车";
             }
             MF.AddOperLogCacheStr("车牌： " + GetPlateNo);
             GetVehicleLogoRecog = "";

@@ -125,7 +125,7 @@ namespace ETCF
 
             public IPAddress Ipaddress;
 
-            private string boundary = "welcome to wanji";
+            //private string boundary = "welcome to wanji";
             /// <summary>
             /// 端口啊
             /// </summary>
